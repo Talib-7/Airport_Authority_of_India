@@ -114,24 +114,6 @@ Frontend Developer Intern – Airport Authority of India (AAI)
 This project is being actively developed.
 New features and modules will be added continuously as part of the internship work.
 
-## 📂 Project Structure
-
-src/
-├── assets/
-│   └── logos-icons/
-│       └── Airports_Authority_of_India_logo.svg.png
-├── modules/
-│   └── auth/
-│       ├── components/
-│       ├── pages/
-│       └── auth.css
-├── App.jsx
-├── main.jsx
-├── index.css
-public/
-├── aai-logo.svg
-└── user-avatar.svg
-
 
 
 
