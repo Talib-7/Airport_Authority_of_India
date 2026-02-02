@@ -118,28 +118,20 @@ New features and modules will be added continuously as part of the internship wo
 
 src/
 ├── assets/
-│ └── logos-icons/
-│ └── Airports_Authority_of_India_logo.svg.png
-│
+│   └── logos-icons/
+│       └── Airports_Authority_of_India_logo.svg.png
 ├── modules/
-│ └── auth/
-│ ├── components/
-│ │ ├── LoginForm.jsx
-│ │ └── RegisterForm.jsx
-│ │
-│ ├── pages/
-│ │ ├── LoginPage.jsx
-│ │ └── RegisterPage.jsx
-│ │
-│ └── auth.css
-│
+│   └── auth/
+│       ├── components/
+│       ├── pages/
+│       └── auth.css
 ├── App.jsx
 ├── main.jsx
 ├── index.css
-│
 public/
 ├── aai-logo.svg
 └── user-avatar.svg
+
 
 
 
