@@ -15,6 +15,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   padding: 0 24px;
+  
 }
 
 /* LOGO */
@@ -171,6 +172,7 @@
   font-size: 14px;
   color: #555;
   margin-bottom: 50px;
+  
 }
 
 /* SELECT + FILE */
