@@ -5,18 +5,66 @@ import "./surveyQuestions.css";
 const SurveyQuestions = () => {
 
   const [questionsList, setQuestionsList] = useState([
-    {
-      question: "How was your airport experience?",
-      options: ["Good", "Average", "Bad"],
-      isLive: true,
-      surveys: ["Passenger Survey 2024", "Service Quality Survey"]
-    },
-    {
-      question: "Was staff helpful?",
-      options: ["Yes", "No"],
-      isLive: false,
-      surveys: []
-    }
+   {
+    question: "How was your overall airport experience?",
+    options: ["Excellent", "Good", "Average", "Poor"],
+    isLive: true,
+    surveys: ["Passenger Feedback 2024"]
+  },
+  {
+    question: "How satisfied are you with airport cleanliness?",
+    options: ["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied"],
+    isLive: false,
+    surveys: []
+  },
+  {
+    question: "How would you rate airport staff behavior?",
+    options: ["Very Helpful", "Helpful", "Average", "Not Helpful"],
+    isLive: true,
+    surveys: ["Service Quality Survey"]
+  },
+  {
+    question: "Was the security check process smooth?",
+    options: ["Very Smooth", "Smooth", "Average", "Difficult"],
+    isLive: false,
+    surveys: []
+  },
+  {
+    question: "How would you rate waiting time at check-in counters?",
+    options: ["Very Short", "Short", "Acceptable", "Too Long"],
+    isLive: true,
+    surveys: ["Passenger Feedback 2024"]
+  },
+  {
+    question: "How satisfied are you with airport facilities?",
+    options: ["Very Satisfied", "Satisfied", "Neutral", "Unsatisfied"],
+    isLive: false,
+    surveys: []
+  },
+  {
+    question: "Was airport navigation and signage clear?",
+    options: ["Very Clear", "Clear", "Confusing", "Very Confusing"],
+    isLive: true,
+    surveys: ["Navigation Survey"]
+  },
+  {
+    question: "How would you rate food and retail services?",
+    options: ["Excellent", "Good", "Average", "Poor"],
+    isLive: false,
+    surveys: []
+  },
+  {
+    question: "How smooth was the boarding process?",
+    options: ["Very Smooth", "Smooth", "Average", "Delayed"],
+    isLive: true,
+    surveys: ["Boarding Experience Survey"]
+  },
+  {
+    question: "Would you recommend this airport to others?",
+    options: ["Definitely", "Probably", "Not Sure", "No"],
+    isLive: false,
+    surveys: []
+  }
   ]);
 
   // FORM STATES
