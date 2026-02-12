@@ -1,5 +1,7 @@
 import LoginForm from "../components/LoginForm";
-import "../auth.css";
+import "../styles/auth_common.css";
+import "../styles/login.css";
+
 
 const LoginPage = () => {
   return (
@@ -11,11 +13,10 @@ const LoginPage = () => {
                 className="header-logo"
             />
 
-            <h1 className="header-title">AAI Survey System</h1>
+            <h1 className="header-title">Airport Authority of India </h1>
         </header>
 
-
-
+        <div className="fixed-bg"></div>
 
       <div className="login-container">
         <LoginForm />

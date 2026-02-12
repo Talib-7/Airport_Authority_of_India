@@ -1,0 +1,114 @@
+/* ================= MAIN CONTENT AREA ================= */
+.dashboard-main {
+  flex: 1;
+  overflow-y: auto;
+  background: #f5f6f8;
+  position: relative;
+}
+
+/* WATERMARK BACKGROUND */
+.dashboard-main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image: url("/aai-logo.png");
+  background-repeat: repeat;
+  background-size: 150px;
+  opacity: 0.07;
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ================= CONTENT WRAPPER ================= */
+.dashboard-content {
+  padding: 30px;
+  position: relative;
+  z-index: 1;
+  min-width: 950px;
+}
+
+.dashboard-content h1 {
+  margin-bottom: 15px;
+  font-size: 35px;
+  font-weight: 600;
+}
+
+/* ================= FILTERS ================= */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-top: 30px;
+  margin-bottom: 70px;
+}
+
+.filters span {
+  font-weight: 500;
+}
+
+.filters select {
+  padding: 6px 12px;
+  min-width: 160px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* ================= STATS CARDS ================= */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 40px;
+}
+
+.stat-card {
+  height: 140px;
+  border-radius: 18px;
+  color: #fff;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-card p {
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.stat-card h2 {
+  margin-top: 10px;
+  font-size: 30px;
+}
+
+/* ================= CARD COLORS ================= */
+.blue {
+  background: #1e88e5;
+}
+
+.green {
+  background: #43a047;
+}
+
+.yellow {
+  background: #fbc02d;
+  color: #000;
+}
+
+.red {
+  background: #e53935;
+}
+
+/* ================= SMALL SCREEN TWEAK ================= */
+@media (max-width: 700px) {
+  .dashboard-content {
+    padding: 20px;
+  }
+
+  .stats-row {
+    gap: 25px;
+  }
+}

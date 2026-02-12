@@ -1,0 +1,263 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.add-btn {
+  background-color: #0b1f3a;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.add-btn:hover {
+  background-color: #163a6b;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background: #eef1f5;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.data-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.edit-btn {
+  background: #ffc107;
+  border: none;
+  padding: 5px 10px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+.dashboard-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-main {
+  flex: 1;
+  overflow-y: auto;
+  background: #f4f6f8;
+}
+
+.dashboard-content {
+  padding: 30px;
+}
+
+
+/* ================= QUESTION FORM ================= */
+
+.question-box {
+  margin-top: 15px;
+  padding: 20px;
+  border-radius: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+
+.question-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.option-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.plus-btn {
+  padding: 8px 14px;
+  font-size: 18px;
+  border: none;
+  border-radius: 6px;
+  background: #28a745;
+  color: white;
+  cursor: pointer;
+}
+
+.add-question-btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: none;
+  background: #0b1853;
+  color: white;
+  cursor: pointer;
+}
+
+.questions-title {
+  margin-top: 30px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.question-item {
+  margin-top: 15px;
+  padding: 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.option-text {
+  margin-left: 10px;
+  font-size: 14px;
+  color: #555;
+}
+ 
+
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  height: 28px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: white;
+
+} 
+
+
+
+.green {
+  background: #28a745;
+}
+
+.red {
+  background: #dc3545;
+}
+
+.status-btn {
+  width: 60px;              /* Fixed width */
+  height: 28px;
+  text-align: center;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #0b1853;
+  color: white; 
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.view-btn {
+  background: #1e88e5;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Make the TD itself flex without breaking border */
+.data-table td.status-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+}
+
+
+.dashboard-content {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  min-width: 950px;       /*  wrap rokega */
+  border-collapse: collapse;
+  table-layout: fixed;     /* columns stable */
+}
+
+/* Sr No */
+.data-table th:nth-child(1),
+.data-table td:nth-child(1) {
+  width: 45px;
+  text-align: center;
+}
+
+/* Question */
+.data-table th:nth-child(2),
+.data-table td:nth-child(2) {
+  width: 50%;
+}
+
+/* Status */
+.data-table th:nth-child(3),
+.data-table td:nth-child(3) {
+  width: 150px;
+  text-align: center;
+}
+
+/* Live In */
+.data-table th:nth-child(4),
+.data-table td:nth-child(4) {
+  width: 120px;
+  text-align: center;
+}
+
+/* Actions */
+.data-table th:nth-child(5),
+.data-table td:nth-child(5) {
+  width: 150px;
+  text-align: center;
+}
+
+
+.actions-cell {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.data-table td,
+.data-table th {
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+

@@ -1,4 +1,5 @@
-import "../auth.css";
+// import "../styles/register.css";
+// import "../styles/auth_common.css"
 //returning from registration page to login page
 import { Link } from "react-router-dom";
 

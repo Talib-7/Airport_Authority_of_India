@@ -1,0 +1,62 @@
+/* ================= ROOT (TOPBAR SUPPORT) ================= */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+  overflow-x: auto;
+}
+
+/* ================= TOP BAR ================= */
+.topbar {
+  height: 85px;
+  background: #00082D;
+  color: #fff;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-width: 950px;
+  z-index: 1000;
+
+  padding: 0 24px;
+}
+
+/* LEFT LOGO */
+.topbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-logo {
+  height: 70px;
+  width: auto;
+}
+
+/* CENTER TITLE */
+.topbar .title {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 3px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* RIGHT USER */
+.topbar .user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.user-icon {
+  font-size: 26px;
+}
+

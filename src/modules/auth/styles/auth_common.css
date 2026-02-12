@@ -1,0 +1,74 @@
+/* HEADER */
+.top-bar {
+  height: 85px;
+  background: #00082D;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 0 24px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* LOGO */
+.header-logo {
+  height: 70px;
+}
+
+/* TITLE */
+.header-title {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-align: center;
+}
+
+/* FIXED BACKGROUND */
+.fixed-bg {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 80px);
+
+  background-color: #f8fafc;
+  background-image: url("/aai-logo.png");
+  background-repeat: repeat;
+  background-size: 150px;
+
+  z-index: 0;
+}
+
+
+.fixed-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.92);
+  pointer-events: none;
+}
+
+/* COMMON FORM */
+.field {
+  text-align: left;
+  margin-bottom: 14px;
+  
+}
+
+.field label {
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px 14px;
+  margin-top: 6px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+}
