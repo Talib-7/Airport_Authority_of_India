@@ -5,7 +5,8 @@ import { Routes, Route } from "react-router-dom";
 import RegisterPage from "./modules/auth/pages/RegisterPage";
 import ForgotPasswordPage from "./modules/auth/pages/ForgotPasswordPage";
 import Dashboard from "./modules/dashboard/pages/Dashboard";
-import GeneralQuestions from "./modules/generalQuestions/GeneralQuestions";
+import SurveyQuestions from "./modules/surveyQuestions/SurveyQuestions";
+import SurveyRunning from "./modules/surveyRunning/SurveyRunning";
 
 function App() {
   return (
@@ -15,7 +16,8 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot" element={<ForgotPasswordPage/>}/>
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/general-questions" element={<GeneralQuestions />}/>
+      <Route path="/survey-questions" element={<SurveyQuestions />} />
+      <Route path="/survey-running" element={<SurveyRunning />} />
     
     </Routes>
 
