@@ -91,18 +91,17 @@ public/
    ```bash
    git clone <repository-url>
 
-
 2. Navigate to project folder:
     cd aai-survey-system
-Install dependencies:
+   
+3. Install dependencies:
+    npm install
 
-3. npm install
-    Start development server:
-
-4. npm run dev
-    Open in browser:
-
-http://localhost:5173
+4. Start development server:
+    npm run dev
+   
+5. Open in browser:
+    http://localhost:5173
 
 
 👨‍💻 Author
@@ -114,3 +113,9 @@ Frontend Developer Intern – Airport Authority of India (AAI)
 
 This project is being actively developed.
 New features and modules will be added continuously as part of the internship work.
+
+
+
+
+
+
