@@ -7,6 +7,7 @@ import ForgotPasswordPage from "./modules/auth/pages/ForgotPasswordPage";
 import Dashboard from "./modules/dashboard/pages/Dashboard";
 import SurveyQuestions from "./modules/surveyQuestions/SurveyQuestions";
 import SurveyRunning from "./modules/surveyRunning/SurveyRunning";
+import Airports from "./modules/airports/Airports";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/survey-questions" element={<SurveyQuestions />} />
       <Route path="/survey-running" element={<SurveyRunning />} />
+      <Route path="/airports" element={<Airports />} />
     
     </Routes>
 
