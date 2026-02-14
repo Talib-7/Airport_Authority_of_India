@@ -1,0 +1,133 @@
+/* ===== Page Header ===== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* ===== Scroll Safety ===== */
+.dashboard-content {
+  overflow-x: auto;
+}
+
+/* ===== Survey Table ===== */
+.survey-table {
+  width: 100%;
+  min-width: 1100px;   /* wrap prevent */
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.survey-table th {
+  background: #eef1f5;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.survey-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+/* ===== Column Width Control ===== */
+
+/* Sr No */
+.survey-table th:nth-child(1),
+.survey-table td:nth-child(1) {
+  width: 50px;
+  text-align: center;
+}
+
+/* Survey Id (Smaller) */
+.survey-table th:nth-child(2),
+.survey-table td:nth-child(2) {
+  width: 110px;
+  text-align: center;
+}
+
+/* Survey Name (Wider) */
+.survey-table th:nth-child(3),
+.survey-table td:nth-child(3) {
+  width: 30%;
+}
+
+/* Status */
+.survey-table th:nth-child(4),
+.survey-table td:nth-child(4) {
+  width: 120px;
+  text-align: center;
+}
+
+/* Start Date */
+.survey-table th:nth-child(5),
+.survey-table td:nth-child(5) {
+  width: 120px;
+  text-align: center;
+}
+
+/* End Date */
+.survey-table th:nth-child(6),
+.survey-table td:nth-child(6) {
+  width: 120px;
+  text-align: center;
+}
+
+/* Action */
+.survey-table th:nth-child(7),
+.survey-table td:nth-child(7) {
+  width: 160px;
+  text-align: center;
+}
+
+/* ===== Status Badge ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  height: 28px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: white;
+  margin-right: 6px;
+}
+
+.green {
+  background: #28a745;
+}
+
+.red {
+  background: #dc3545;
+}
+
+/* ===== Buttons ===== */
+.survey-status-btn {
+  width: 70px;
+  height: 28px;
+  border-radius: 5px;
+  border: none;
+  background: #0b1853;
+  color: white;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: #ffc107;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ===== Edit Panel ===== */
+.question-box {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+}

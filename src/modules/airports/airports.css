@@ -1,0 +1,329 @@
+/* ================= PAGE HEADING ================= */
+
+h2 {
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+/* ================= FORM CONTAINER ================= */
+
+.airport-form-container {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 22px 28px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.96);
+  border: 1px solid #d6dde8;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* ================= ROW STRUCTURE ================= */
+
+.airport-row {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.airport-button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* ================= INPUTS ================= */
+
+.airport-input {
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid #ccd3df;
+  background: #f5f7fa;
+  font-size: 14px;
+  outline: none;
+  height: 38px;
+  transition: 0.2s ease;
+}
+
+.airport-input:focus {
+  border-color: #0b1853;
+  background: white;
+  box-shadow: 0 0 0 2px rgba(11,24,83,0.08);
+}
+
+/* Size Control */
+
+.airport-input.large {
+  flex: 2;
+}
+
+.airport-input.medium {
+  flex: 1;
+}
+
+.airport-input.small {
+  flex: 1;
+}
+
+/* ================= BUTTONS ================= */
+
+.map-btn {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 8px;
+  border: 1px solid #ccd3df;
+  background: #e8edf5;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.map-btn:hover {
+  background: #dbe3f0;
+}
+
+.add-airport-btn {
+  height: 36px;
+  padding: 0 22px;
+  border-radius: 20px;
+  border: none;
+  background: #0b1853;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.add-airport-btn:hover {
+  background: #162b7a;
+}
+
+/* ================= TABLE ================= */
+
+.airport-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+.airport-table th {
+  background: #eef1f5;
+  padding: 10px;
+  border: 1px solid #ddd;
+  font-weight: 600;
+}
+
+.airport-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* Column Width */
+
+.airport-table th:nth-child(1),
+.airport-table td:nth-child(1) {
+  width: 65px;
+}
+
+.airport-table th:nth-child(2),
+.airport-table td:nth-child(2) {
+  width: 26%;
+}
+
+.airport-table th:nth-child(3),
+.airport-table td:nth-child(3) {
+  width: 8%;
+}
+
+.airport-table th:nth-child(4),
+.airport-table td:nth-child(4) {
+  width: 8%;
+}
+
+.airport-table th:nth-child(5),
+.airport-table td:nth-child(5) {
+  width: 6%;
+}
+
+.airport-table th:nth-child(6),
+.airport-table td:nth-child(6) {
+  width: 8%;
+}
+
+.airport-table th:nth-child(7),
+.airport-table td:nth-child(7) {
+  width: 12%;
+}
+
+.airport-table th:nth-child(8),
+.airport-table td:nth-child(8) {
+  width: 13%;
+}
+
+/* ================= ACTION BUTTONS ================= */
+
+.edit-btn {
+  background: #ffc107;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.delete-btn {
+  background: #dc3545;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: white;
+  cursor: pointer;
+}
+
+.view-btn {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: none;
+  background: #1e88e5;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Scroll Safety */
+
+.dashboard-content {
+  overflow-x: auto;
+}
+
+/* Disabled Update & Delete Button Styling */
+.edit-btn:disabled,
+.delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+
+
+/* ===== Professional Survey Modal ===== */
+
+.survey-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 50, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.survey-modal-box {
+  width: 420px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 25px 28px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  animation: modalFade 0.2s ease-in-out;
+}
+
+@keyframes modalFade {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Title */
+.survey-modal-box h3 {
+  margin-bottom: 18px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0b1853;
+}
+
+/* Each survey row */
+.survey-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f4f6fb;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.survey-item:hover {
+  background: #e9edf7;
+}
+
+/* Stop button */
+.stop-btn {
+  background: #dc3545;
+  border: none;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.stop-btn:hover {
+  background: #b02a37;
+}
+
+/* Bottom buttons */
+.stop-all-btn {
+  background: #0b1853;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: 0.2s;
+}
+
+.stop-all-btn:hover {
+  background: #132b7a;
+}
+
+.close-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  background: #5a6268;
+}
+
+/* Bottom button row alignment */
+.survey-modal-box button {
+  margin-top: 10px;
+}
+
+
