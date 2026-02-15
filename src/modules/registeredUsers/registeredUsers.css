@@ -1,0 +1,123 @@
+/* ===== Page Title ===== */
+.page-title {
+  margin-bottom: 18px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* ===== Table ===== */
+.registered-table {
+  width: 100%;
+  min-width: 1200px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Header */
+.registered-table th {
+  background: #eef1f5;
+  padding: 14px 10px;
+  border: 1px solid #ddd;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Body */
+.registered-table td {
+  padding: 14px 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+/* ===== Column Width Control ===== */
+
+/* Sr No */
+.registered-table th:nth-child(1),
+.registered-table td:nth-child(1) {
+  width: 60px;
+}
+
+/* Name */
+.registered-table th:nth-child(2),
+.registered-table td:nth-child(2) {
+  width: 15%;
+}
+
+/* Email */
+.registered-table th:nth-child(3),
+.registered-table td:nth-child(3) {
+  width: 18%;
+}
+
+/* Mobile */
+.registered-table th:nth-child(4),
+.registered-table td:nth-child(4) {
+  width: 12%;
+}
+
+/* Agency Name */
+.registered-table th:nth-child(5),
+.registered-table td:nth-child(5) {
+  width: 15%;
+}
+
+/* Agency Code */
+.registered-table th:nth-child(6),
+.registered-table td:nth-child(6) {
+  width: 10%;
+}
+
+/* Upload ID */
+.registered-table th:nth-child(7),
+.registered-table td:nth-child(7) {
+  width: 10%;
+}
+
+/* Action */
+.registered-table th:nth-child(8),
+.registered-table td:nth-child(8) {
+  width: 12%;
+}
+
+/* ===== Buttons ===== */
+
+.approve-btn {
+  background: #28a745;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 6px;
+  font-size: 13px;
+}
+
+.approve-btn:hover {
+  background: #218838;
+}
+
+.reject-btn {
+  background: #dc3545;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.reject-btn:hover {
+  background: #c82333;
+}
+
+.view-btn {
+  background: #1e88e5;
+  border: none;
+  padding: 6px 10px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+}
