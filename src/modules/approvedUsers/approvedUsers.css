@@ -1,0 +1,178 @@
+/* ===== Page Title ===== */
+.page-title {
+  margin-bottom: 18px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* ===== Table ===== */
+.approved-table {
+  width: 100%;
+  min-width: 1250px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Header */
+.approved-table th {
+  background: #eef1f5;
+  padding: 14px 10px;
+  border: 1px solid #ddd;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Body */
+.approved-table td {
+  padding: 14px 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+/* ===== Column Width Control ===== */
+
+/* Sr No */
+.approved-table th:nth-child(1),
+.approved-table td:nth-child(1) {
+  width: 60px;
+}
+
+/* Name */
+.approved-table th:nth-child(2),
+.approved-table td:nth-child(2) {
+  width: 14%;
+}
+
+/* Email */
+.approved-table th:nth-child(3),
+.approved-table td:nth-child(3) {
+  width: 18%;
+}
+
+/* Mobile */
+.approved-table th:nth-child(4),
+.approved-table td:nth-child(4) {
+  width: 12%;
+}
+
+/* Agency Name */
+.approved-table th:nth-child(5),
+.approved-table td:nth-child(5) {
+  width: 14%;
+}
+
+/* Agency Code */
+.approved-table th:nth-child(6),
+.approved-table td:nth-child(6) {
+  width: 10%;
+}
+
+/* Assigned Surveys */
+.approved-table th:nth-child(7),
+.approved-table td:nth-child(7) {
+  width: 14%;
+}
+
+/* Actions */
+.approved-table th:nth-child(8),
+.approved-table td:nth-child(8) {
+  width: 14%;
+}
+
+/* ===== Buttons ===== */
+
+.edit-btn {
+  background: #ffc107;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-right: 6px;
+}
+
+.edit-btn:hover {
+  background: #e0a800;
+}
+
+.delete-btn {
+  background: #dc3545;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.delete-btn:hover {
+  background: #c82333;
+}
+
+/* Disabled State */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== Modal ===== */
+
+.survey-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.survey-modal-box {
+  background: white;
+  padding: 25px;
+  width: 420px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.survey-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.stop-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.stop-all-btn {
+  background: #0b1853;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 12px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.close-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  background: #6c757d;
+  color: white;
+  cursor: pointer;
+}
