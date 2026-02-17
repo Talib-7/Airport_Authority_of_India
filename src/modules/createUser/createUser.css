@@ -1,0 +1,134 @@
+/* ===== Page Title ===== */
+h2 {
+  margin-bottom: 25px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #0b1853;
+}
+
+/* ===== Form Wrapper Center ===== */
+.create-user-form {
+  background: rgba(255, 255, 255, 0.96);
+  padding: 40px 45px;
+  border-radius: 16px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e4e7ec;
+  max-width: 900px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* ===== Form Row Layout ===== */
+.form-row {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 22px;
+  align-items: flex-start;
+}
+
+/* ===== Field Wrapper (Label + Input) ===== */
+.field-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  /* letter-spacing: 3px; */
+}
+
+.field-wrapper label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #000000;
+  letter-spacing: 1px;
+}
+
+/* ===== Inputs & Select ===== */
+.create-user-form input,
+.create-user-form select {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #d0d5dd;
+  font-size: 14px;
+  background: #f9fafb;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+/* Focus Effect */
+.create-user-form input:focus,
+.create-user-form select:focus {
+  border-color: #0b1853;
+  box-shadow: 0 0 0 3px rgba(11, 24, 83, 0.08);
+  background: #ffffff;
+}
+
+/* ===== For Section ===== */
+.form-row {
+  font-size: 14px;
+  margin-right: 20px;
+  color: #000000;
+  letter-spacing: 1px;
+  font-weight: 600px;
+}
+
+/* Radio Group */
+.radio-group {
+  display: flex;
+  gap: 35px;
+}
+
+.radio-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #344054;
+  cursor: pointer;
+}
+
+.radio-group input {
+  margin-right: 6px;
+  accent-color: #0b1853;
+  transform: scale(1.05);
+}
+
+/* ===== Submit Button ===== */
+.create-btn {
+  background: linear-gradient(135deg, #0b1853, #162a6a);
+  color: white;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(11, 24, 83, 0.25);
+}
+
+/* ===== Smooth Animation ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .create-user-form {
+    padding: 30px;
+  }
+}
