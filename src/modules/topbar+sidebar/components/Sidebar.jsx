@@ -83,12 +83,12 @@ const Sidebar = () => {
           {({ isActive }) => (
             <li className={isActive ? "active" : ""}>
               <MdAddBox className="menu-icon" />
-              Create Feedback
+              Survey Management
             </li>
           )}
         </NavLink>
 
-        <NavLink to="/metabase" style={{ textDecoration: "none", color: "inherit" }}>
+        {/* <NavLink to="/metabase" style={{ textDecoration: "none", color: "inherit" }}>
           {({ isActive }) => (
             <li className={isActive ? "active" : ""}>
               <MdStorage className="menu-icon" />
@@ -104,7 +104,7 @@ const Sidebar = () => {
               Reports
             </li>
           )}
-        </NavLink>
+        </NavLink> */}
 
         <NavLink to="/create-user" style={{ textDecoration: "none", color: "inherit" }}>
           {({ isActive }) => (
