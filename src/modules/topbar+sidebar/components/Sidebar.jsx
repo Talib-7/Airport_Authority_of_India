@@ -79,7 +79,7 @@ const Sidebar = () => {
           )}
         </NavLink>
 
-        <NavLink to="/create-feedback" style={{ textDecoration: "none", color: "inherit" }}>
+        <NavLink to="/survey-management" style={{ textDecoration: "none", color: "inherit" }}>
           {({ isActive }) => (
             <li className={isActive ? "active" : ""}>
               <MdAddBox className="menu-icon" />
