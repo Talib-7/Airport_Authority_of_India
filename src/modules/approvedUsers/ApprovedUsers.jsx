@@ -10,30 +10,16 @@ const ApprovedUsers = () => {
       email: "talib@gmail.com",
       mobile: "9876543210",
       agencyName: "Sky Agents",
-      agencyCode: "AG-101",
-      surveys: ["Passenger Feedback 2024", "Security Survey"]
+      agencyCode: "AG-101"
     }
   ]);
 
-  // 🔥 Modal State
-  const [activeUserIndex, setActiveUserIndex] = useState(null);
-
-  // 🔥 Stop Single Survey
-  const stopSurvey = (surveyIndex) => {
-    const updated = [...userList];
-    updated[activeUserIndex].surveys.splice(surveyIndex, 1);
-    setUserList(updated);
-  };
-
-  // 🔥 Stop All Surveys
-  const stopAllSurveys = () => {
-    const updated = [...userList];
-    updated[activeUserIndex].surveys = [];
-    setUserList(updated);
-  };
-
-  // 🔥 Delete User
+  // 🔥 Delete User (Direct Delete)
   const deleteUser = (index) => {
+
+     const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+      if (!confirmDelete) return;
+
     const updated = userList.filter((_, i) => i !== index);
     setUserList(updated);
   };
@@ -52,7 +38,6 @@ const ApprovedUsers = () => {
             <th>Mobile</th>
             <th>Agency Name</th>
             <th>Agency Code</th>
-            <th>Assigned Surveys</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -67,77 +52,19 @@ const ApprovedUsers = () => {
               <td>{item.agencyName}</td>
               <td>{item.agencyCode}</td>
 
-              {/* 🔥 View Surveys Button */}
-              <td>
-                {item.surveys.length > 0 ? (
-                  <button
-                    className="view-btn"
-                    onClick={() => setActiveUserIndex(index)}
-                  >
-                    View Surveys
-                  </button>
-                ) : (
-                  "-"
-                )}
-              </td>
-
               <td>
                 <button
                   className="delete-btn"
-                  disabled={item.surveys.length > 0}
                   onClick={() => deleteUser(index)}
-                  style={{
-                    opacity: item.surveys.length > 0 ? 0.5 : 1,
-                    cursor: item.surveys.length > 0 ? "not-allowed" : "pointer"
-                  }}
                 >
                   Delete
                 </button>
               </td>
+
             </tr>
           ))}
         </tbody>
       </table>
-
-      {/* 🔥 Survey Modal */}
-      {activeUserIndex !== null && (
-        <div className="survey-modal">
-          <div className="survey-modal-box">
-
-            <h3>Assigned Surveys</h3>
-
-            {userList[activeUserIndex].surveys.map((survey, i) => (
-              <div key={i} className="survey-item">
-                <span>{survey}</span>
-
-                <button
-                  className="stop-btn"
-                  onClick={() => stopSurvey(i)}
-                >
-                  Stop
-                </button>
-              </div>
-            ))}
-
-            {userList[activeUserIndex].surveys.length > 0 && (
-              <button
-                className="stop-all-btn"
-                onClick={stopAllSurveys}
-              >
-                Stop All
-              </button>
-            )}
-
-            <button
-              className="close-btn"
-              onClick={() => setActiveUserIndex(null)}
-            >
-              Close
-            </button>
-
-          </div>
-        </div>
-      )}
 
     </Layout>
   );
