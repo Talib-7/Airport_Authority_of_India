@@ -11,6 +11,7 @@ import Airports from "./modules/airports/Airports";
 import RegisteredAgents from "./modules/registeredAgents/RegisteredAgents"
 import ApprovedAgents from "./modules/approvedAgents/ApprovedAgents"
 import CreateUser from "./modules/createUser/CreateUser";
+import AgentHistory from "./modules/agentHistory/AgentHistory";
 
 function App() {
   return (
@@ -26,7 +27,8 @@ function App() {
       <Route path="/airports" element={<Airports />} />
       <Route path="/registered-agents" element={<RegisteredAgents />} />
       <Route path="/approved-agents" element={<ApprovedAgents />} />
-      <Route path="/create-user" element={<CreateUser />} />    
+      <Route path="/create-user" element={<CreateUser />} />  
+      <Route path="/agent-history" element={<AgentHistory />} />  
     </Routes>
 
   );

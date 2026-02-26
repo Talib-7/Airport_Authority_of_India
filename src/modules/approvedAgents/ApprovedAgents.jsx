@@ -12,9 +12,32 @@ const ApprovedAgents = () => {
   }, []);
 
   const deleteUser = (index) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+
+    const reason = prompt("Enter reason for deleting this agent:");
+    if (!reason) return;
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this agent?");
     if (!confirmDelete) return;
 
+    const userToDelete = userList[index];
+
+    // 🔥 Get existing history
+    const history = JSON.parse(localStorage.getItem("agentHistory")) || [];
+
+    // 🔥 Create history object
+    const deletedAgent = {
+      ...userToDelete,
+      deletedReason: reason,
+      deletedDate: new Date().toLocaleString()
+    };
+
+    // 🔥 Save to history
+    localStorage.setItem(
+      "agentHistory",
+      JSON.stringify([...history, deletedAgent])
+    );
+
+    // 🔥 Remove from Approved
     const updated = userList.filter((_, i) => i !== index);
     setUserList(updated);
     localStorage.setItem("approvedAgents", JSON.stringify(updated));

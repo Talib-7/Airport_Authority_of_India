@@ -133,6 +133,15 @@ const Sidebar = () => {
           )}
         </NavLink>
 
+        <NavLink to="/agent-history" style={{ textDecoration: "none", color: "inherit" }}>
+          {({ isActive }) => (
+            <li className={isActive ? "active" : ""}>
+              <MdCheckCircle className="menu-icon" />
+              Agent History
+            </li>
+          )}
+        </NavLink>
+
       </ul>
     </aside>
   );
