@@ -1,29 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../layout/Layout";
 import "./registeredUsers.css";
 
 const RegisteredUsers = () => {
 
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Talib Hussain",
-      email: "talib@gmail.com",
-      mobile: "9876543210",
-      agencyName: "Sky Agents",
-      agencyCode: "AG-101",
-      uploadId: "aadhaar.pdf",
-      surveys: [],
-      status: "Pending"
-    }
-  ]);
+  const [users, setUsers] = useState([]);
 
-  const [approvedUsers, setApprovedUsers] = useState([]);
+  useEffect(() => {
+    const storedUsers = JSON.parse(localStorage.getItem("registeredUsers")) || [];
+    setUsers(storedUsers);
+  }, []);
 
   const handleApprove = (index) => {
     const user = users[index];
-    setApprovedUsers([...approvedUsers, { ...user, status: "Approved" }]);
-    setUsers(users.filter((_, i) => i !== index));
+
+    // Move to Approved
+    const approved = JSON.parse(localStorage.getItem("approvedUsers")) || [];
+    localStorage.setItem("approvedUsers", JSON.stringify([...approved, user]));
+
+    // Remove from Registered
+    const updatedUsers = users.filter((_, i) => i !== index);
+    setUsers(updatedUsers);
+    localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers));
   };
 
   const handleReject = (index) => {
@@ -31,12 +29,22 @@ const RegisteredUsers = () => {
     if (!reason) return;
 
     alert("User Rejected\nReason: " + reason);
-    setUsers(users.filter((_, i) => i !== index));
+
+    const updatedUsers = users.filter((_, i) => i !== index);
+    setUsers(updatedUsers);
+    localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers));
   };
 
-  const previewFile = (fileName) => {
-    alert("Preview File: " + fileName);
-  };
+  const previewFile = (fileData) => {
+  const newWindow = window.open();
+  newWindow.document.write(`
+    <iframe 
+      src="${fileData}" 
+      frameborder="0" 
+      style="width:100%; height:100vh;"
+    ></iframe>
+  `);
+};
 
   return (
     <Layout>
