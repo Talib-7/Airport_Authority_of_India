@@ -115,20 +115,20 @@ const Sidebar = () => {
           )}
         </NavLink>
 
-        <NavLink to="/registered-users" style={{ textDecoration: "none", color: "inherit" }}>
+        <NavLink to="/registered-agents" style={{ textDecoration: "none", color: "inherit" }}>
           {({ isActive }) => (
             <li className={isActive ? "active" : ""}>
               <MdPeople className="menu-icon" />
-              Registered Users
+              Registered Agents
             </li>
           )}
         </NavLink>
 
-        <NavLink to="/approved-users" style={{ textDecoration: "none", color: "inherit" }}>
+        <NavLink to="/approved-agents" style={{ textDecoration: "none", color: "inherit" }}>
           {({ isActive }) => (
             <li className={isActive ? "active" : ""}>
               <MdCheckCircle className="menu-icon" />
-              Approved Users
+              Approved Agents
             </li>
           )}
         </NavLink>

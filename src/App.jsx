@@ -8,8 +8,8 @@ import Dashboard from "./modules/dashboard/pages/Dashboard";
 import SurveyQuestions from "./modules/surveyQuestions/SurveyQuestions";
 import SurveyRunning from "./modules/surveyRunning/SurveyRunning";
 import Airports from "./modules/airports/Airports";
-import RegisteredUsers from "./modules/registeredUsers/RegisteredUsers"
-import ApprovedUsers from "./modules/approvedUsers/ApprovedUsers"
+import RegisteredAgents from "./modules/registeredAgents/RegisteredAgents"
+import ApprovedAgents from "./modules/approvedAgents/ApprovedAgents"
 import CreateUser from "./modules/createUser/CreateUser";
 
 function App() {
@@ -17,15 +17,15 @@ function App() {
     
     <Routes>
 
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot" element={<ForgotPasswordPage/>}/>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/survey-questions" element={<SurveyQuestions />} />
       <Route path="/survey-running" element={<SurveyRunning />} />
       <Route path="/airports" element={<Airports />} />
-      <Route path="/registered-users" element={<RegisteredUsers />} />
-      <Route path="/approved-users" element={<ApprovedUsers />} />
+      <Route path="/registered-agents" element={<RegisteredAgents />} />
+      <Route path="/approved-agents" element={<ApprovedAgents />} />
       <Route path="/create-user" element={<CreateUser />} />    
     </Routes>
 

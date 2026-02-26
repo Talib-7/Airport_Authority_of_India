@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import Layout from "../layout/Layout";
-import "./registeredUsers.css";
+import "./registeredAgents.css";
 
-const RegisteredUsers = () => {
+const registeredAgents = () => {
 
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    const storedUsers = JSON.parse(localStorage.getItem("registeredUsers")) || [];
+    const storedUsers = JSON.parse(localStorage.getItem("registeredAgents")) || [];
     setUsers(storedUsers);
   }, []);
 
@@ -15,13 +15,13 @@ const RegisteredUsers = () => {
     const user = users[index];
 
     // Move to Approved
-    const approved = JSON.parse(localStorage.getItem("approvedUsers")) || [];
+    const approved = JSON.parse(localStorage.getItem("approvedAgents")) || [];
     localStorage.setItem("approvedUsers", JSON.stringify([...approved, user]));
 
     // Remove from Registered
     const updatedUsers = users.filter((_, i) => i !== index);
     setUsers(updatedUsers);
-    localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers));
+    localStorage.setItem("registeredAgents", JSON.stringify(updatedUsers));
   };
 
   const handleReject = (index) => {
@@ -32,7 +32,7 @@ const RegisteredUsers = () => {
 
     const updatedUsers = users.filter((_, i) => i !== index);
     setUsers(updatedUsers);
-    localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers));
+    localStorage.setItem("registeredAgents", JSON.stringify(updatedUsers));
   };
 
   const previewFile = (fileData) => {
@@ -48,7 +48,7 @@ const RegisteredUsers = () => {
 
   return (
     <Layout>
-      <h2>Registered Users</h2>
+      <h2>Registered Agents</h2>
 
       <table className="registered-table">
         <thead>
@@ -106,4 +106,4 @@ const RegisteredUsers = () => {
   );
 };
 
-export default RegisteredUsers;
+export default registeredAgents;

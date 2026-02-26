@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import Layout from "../layout/Layout";
-import "./approvedUsers.css";
+import "./approvedAgents.css";
 
-const ApprovedUsers = () => {
+const ApprovedAgents = () => {
 
   const [userList, setUserList] = useState([]);
 
   useEffect(() => {
-    const storedApproved = JSON.parse(localStorage.getItem("approvedUsers")) || [];
+    const storedApproved = JSON.parse(localStorage.getItem("approvedAgents")) || [];
     setUserList(storedApproved);
   }, []);
 
@@ -17,12 +17,12 @@ const ApprovedUsers = () => {
 
     const updated = userList.filter((_, i) => i !== index);
     setUserList(updated);
-    localStorage.setItem("approvedUsers", JSON.stringify(updated));
+    localStorage.setItem("approvedAgents", JSON.stringify(updated));
   };
 
   return (
     <Layout>
-      <h2>Approved Users</h2>
+      <h2>Approved Agents</h2>
 
       <table className="approved-table">
         <thead>
@@ -63,4 +63,4 @@ const ApprovedUsers = () => {
   );
 };
 
-export default ApprovedUsers;
+export default ApprovedAgents;
