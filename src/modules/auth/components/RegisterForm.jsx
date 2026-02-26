@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
+
+  const navigate = useNavigate(); // 🔥 Added
 
   const [formData, setFormData] = useState({
     name: "",
@@ -13,26 +15,26 @@ const RegisterForm = () => {
   });
 
   const handleChange = (e) => {
-  const { name, value, files } = e.target;
+    const { name, value, files } = e.target;
 
-  if (name === "uploadId" && files[0]) {
-    const reader = new FileReader();
+    if (name === "uploadId" && files[0]) {
+      const reader = new FileReader();
 
-    reader.onloadend = () => {
+      reader.onloadend = () => {
+        setFormData({
+          ...formData,
+          uploadId: reader.result
+        });
+      };
+
+      reader.readAsDataURL(files[0]);
+    } else {
       setFormData({
         ...formData,
-        uploadId: reader.result // 🔥 base64 data
+        [name]: value
       });
-    };
-
-    reader.readAsDataURL(files[0]);
-  } else {
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  }
-};
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,13 +52,16 @@ const RegisterForm = () => {
     };
 
     const existingUsers =
-      JSON.parse(localStorage.getItem("registeredUsers")) || [];
+      JSON.parse(localStorage.getItem("registeredAgents")) || [];
 
     const updatedUsers = [...existingUsers, newUser];
 
-    localStorage.setItem("registeredUsers", JSON.stringify(updatedUsers));
+    localStorage.setItem("registeredAgents", JSON.stringify(updatedUsers));
 
     alert("Registration Successful!");
+
+    // 🔥 Redirect to Login Page After OK
+    navigate("/");
 
     // Reset form
     setFormData({
