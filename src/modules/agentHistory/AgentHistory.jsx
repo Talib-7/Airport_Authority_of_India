@@ -30,18 +30,26 @@ const AgentHistory = () => {
         </thead>
 
         <tbody>
-          {historyList.map((item, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{item.name}</td>
-              <td>{item.email}</td>
-              <td>{item.mobile}</td>
-              <td>{item.agencyName}</td>
-              <td>{item.agencyCode}</td>
-              <td>{item.deletedReason}</td>
-              <td>{item.deletedDate}</td>
+          {historyList.length > 0 ? (
+            historyList.map((item, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{item.name}</td>
+                <td>{item.email}</td>
+                <td>{item.mobile}</td>
+                <td>{item.agencyName}</td>
+                <td>{item.agencyCode}</td>
+                <td>{item.deletedReason}</td>
+                <td>{item.deletedDate}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" className="no-record">
+                No Record Found
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </Layout>

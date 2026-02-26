@@ -61,25 +61,33 @@ const ApprovedAgents = () => {
         </thead>
 
         <tbody>
-          {userList.map((item, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{item.name}</td>
-              <td>{item.email}</td>
-              <td>{item.mobile}</td>
-              <td>{item.agencyName}</td>
-              <td>{item.agencyCode}</td>
+          {userList.length > 0 ? (
+            userList.map((item, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{item.name}</td>
+                <td>{item.email}</td>
+                <td>{item.mobile}</td>
+                <td>{item.agencyName}</td>
+                <td>{item.agencyCode}</td>
 
-              <td>
-                <button
-                  className="delete-btn"
-                  onClick={() => deleteUser(index)}
-                >
-                  Delete
-                </button>
+                <td>
+                  <button
+                    className="delete-btn"
+                    onClick={() => deleteUser(index)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="7" className="no-record">
+                No Record Found
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </Layout>

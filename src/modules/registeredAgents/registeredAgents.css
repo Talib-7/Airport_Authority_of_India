@@ -151,3 +151,10 @@
   z-index: 5;
   background: linear-gradient(to right, #f3f6fb, #eef1f6);
 }
+
+.no-record {
+  padding: 30px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #6c757d;
+}

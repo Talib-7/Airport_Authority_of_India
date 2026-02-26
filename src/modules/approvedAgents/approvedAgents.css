@@ -96,3 +96,10 @@ h2 {
   background: #c82333;
   transform: translateY(-1px);
 }
+
+.no-record {
+  padding: 30px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #6c757d;
+}
