@@ -1,21 +1,24 @@
 import React,{useState} from "react";
-
-//for Registration Page
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import useAuthStore from "../stores/authStore";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { login: authLogin, loading, error } = useAuthStore();
+  
   const [formaData, setFormData] =useState({
     username: "",
     password: ""
   });
 
-
-  function login() {
-    const username = "talib@gmail.com"
-    const password = "talib123"
-    if ((username === formaData.username) && (password === formaData.password)) {
-      navigate("/dashboard")
+  const login = async () => {
+    const result = await authLogin({
+      email: formaData.username,
+      password: formaData.password
+    });
+    
+    if (result.success) {
+      navigate("/dashboard");
     }
   }
   
@@ -25,31 +28,49 @@ const LoginForm = () => {
         <img src="user-avtar.png" alt="User Avatar" />
       </div>
 
+      {error && (
+        <div style={{ color: 'red', marginBottom: '10px', textAlign: 'center' }}>
+          {error}
+        </div>
+      )}
+
       <div className="field">
         <label>Username</label>
-        <input type="email" placeholder="Enter your E-mail" onChange={(e) =>
-      setFormData((prev) => ({
-        ...prev,
-        username: e.target.value,
-      }))
-    }/>
+        <input 
+          type="email" 
+          placeholder="Enter your E-mail"
+          disabled={loading}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              username: e.target.value,
+            }))
+          }
+        />
       </div>
 
       <div className="field">
         <label>Password</label>
-        <input type="password" placeholder="Enter your Password" onChange={(e) =>
-      setFormData((prev) => ({
-        ...prev,
-        password: e.target.value,
-      }))
-    } />
+        <input 
+          type="password" 
+          placeholder="Enter your Password"
+          disabled={loading}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              password: e.target.value,
+            }))
+          } 
+        />
       </div>
 
       <div className="links">
         <a href="/forgot">Forgot Password?</a>
       </div>
 
-      <button className="login-btn" onSubmit={login()}>Login</button>
+      <button className="login-btn" onClick={login} disabled={loading}>
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
 
       <div className="register">
          <Link to="/register">Register?</Link>

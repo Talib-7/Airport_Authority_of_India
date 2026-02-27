@@ -60,3 +60,24 @@ html, body, #root {
   font-size: 26px;
 }
 
+.logout-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-left: 10px;
+}
+
+.logout-btn:hover {
+  background: #cc0000;
+}
+
+.logout-btn:active {
+  transform: scale(0.98);
+}
+
