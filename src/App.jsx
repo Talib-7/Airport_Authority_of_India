@@ -1,5 +1,6 @@
 import LoginPage from "./modules/auth/pages/LoginPage";
-
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 //for Registration page
 import { Routes, Route } from "react-router-dom";
 import RegisterPage from "./modules/auth/pages/RegisterPage";
@@ -13,11 +14,19 @@ import ApprovedUsers from "./modules/approvedUsers/ApprovedUsers"
 import CreateUser from "./modules/createUser/CreateUser";
 
 function App() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+    }
+  }, [navigate]);
   return (
     
     <Routes>
 
       <Route path="/" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot" element={<ForgotPasswordPage/>}/>
       <Route path="/dashboard" element={<Dashboard />} />

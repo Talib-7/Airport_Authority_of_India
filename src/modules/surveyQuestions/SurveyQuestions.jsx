@@ -1,155 +1,100 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../layout/Layout";
+import useSurveyQuestionsStore from "./stores/surveyQuestionsStore";
 import "./surveyQuestions.css";
 
 const SurveyQuestions = () => {
-
-  const [questionsList, setQuestionsList] = useState([
-   {
-    question: "How was your overall airport experience?",
-    options: ["Excellent", "Good", "Average", "Poor"],
-    isLive: true,
-    surveys: ["Passenger Feedback 2024"]
-  },
-  {
-    question: "How satisfied are you with airport cleanliness?",
-    options: ["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied"],
-    isLive: false,
-    surveys: []
-  },
-  {
-    question: "How would you rate airport staff behavior?",
-    options: ["Very Helpful", "Helpful", "Average", "Not Helpful"],
-    isLive: true,
-    surveys: ["Service Quality Survey"]
-  },
-  {
-    question: "Was the security check process smooth?",
-    options: ["Very Smooth", "Smooth", "Average", "Difficult"],
-    isLive: false,
-    surveys: []
-  },
-  {
-    question: "How would you rate waiting time at check-in counters?",
-    options: ["Very Short", "Short", "Acceptable", "Too Long"],
-    isLive: true,
-    surveys: ["Passenger Feedback 2024"]
-  },
-  {
-    question: "How satisfied are you with airport facilities?",
-    options: ["Very Satisfied", "Satisfied", "Neutral", "Unsatisfied"],
-    isLive: false,
-    surveys: []
-  },
-  {
-    question: "Was airport navigation and signage clear?",
-    options: ["Very Clear", "Clear", "Confusing", "Very Confusing"],
-    isLive: true,
-    surveys: ["Navigation Survey"]
-  },
-  {
-    question: "How would you rate food and retail services?",
-    options: ["Excellent", "Good", "Average", "Poor"],
-    isLive: false,
-    surveys: []
-  },
-  {
-    question: "How smooth was the boarding process?",
-    options: ["Very Smooth", "Smooth", "Average", "Delayed"],
-    isLive: true,
-    surveys: ["Boarding Experience Survey"]
-  },
-  {
-    question: "Would you recommend this airport to others?",
-    options: ["Definitely", "Probably", "Not Sure", "No"],
-    isLive: false,
-    surveys: []
-  }
-  ]);
+  // Store
+  const { 
+    surveyQuestions, 
+    loading, 
+    error, 
+    fetchSurveyQuestions, 
+    createSurveyQuestion, 
+    updateSurveyQuestion, 
+    deleteSurveyQuestion,
+    clearError 
+  } = useSurveyQuestionsStore();
 
   // FORM STATES
   const [showForm, setShowForm] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
-  const [newOption, setNewOption] = useState("");
-  const [optionList, setOptionList] = useState([]);
-  const [editIndex, setEditIndex] = useState(null); // 🔥 EDIT MODE
+  const [editId, setEditId] = useState(null); // 🔥 EDIT MODE
+
+  // Fetch questions on mount
+  useEffect(() => {
+    fetchSurveyQuestions();
+  }, [fetchSurveyQuestions]);
 
   // STATUS TOGGLE
-  const toggleStatus = (index) => {
-    const updated = [...questionsList];
-    updated[index].isLive = !updated[index].isLive;
+  const toggleStatus = async (id) => {
+    const question = surveyQuestions.find(q => q.surveyQuestionId === id);
+    if (!question) return;
 
-    if (!updated[index].isLive) {
-      updated[index].surveys = [];
-    } else {
-      updated[index].surveys = ["New Live Survey"];
+    const updatedStatus = !question.status;
+    const result = await updateSurveyQuestion(id, { status: updatedStatus });
+    
+    if (!result.success) {
+      alert(`Failed to update status: ${result.error}`);
     }
-
-    setQuestionsList(updated);
   };
 
   // DELETE
-  const deleteQuestion = (index) => {
-    const updated = questionsList.filter((_, i) => i !== index);
-    setQuestionsList(updated);
+  const handleDelete = async (id, isLive) => {
+    if (isLive) {
+      alert("Stop the survey first before deleting.");
+      return;
+    }
+
+    if (window.confirm("Are you sure you want to delete this question?")) {
+      const result = await deleteSurveyQuestion(id);
+      
+      if (!result.success) {
+        alert(`Failed to delete question: ${result.error}`);
+      }
+    }
   };
 
   // OPEN EDIT MODE
-  const handleUpdate = (item, index) => {
-    if (item.isLive) {
+  const handleUpdate = (item) => {
+    if (item.status) {
       alert("Stop the survey first before updating.");
       return;
     }
 
     setShowForm(true);
-    setNewQuestion(item.question);
-    setOptionList(item.options);
-    setEditIndex(index);
-  };
-
-  // ADD OPTION
-  const addOption = () => {
-    if (newOption.trim() !== "") {
-      setOptionList([...optionList, newOption]);
-      setNewOption("");
-    }
-  };
-
-  // REMOVE OPTION
-  const removeOption = (index) => {
-    const updated = optionList.filter((_, i) => i !== index);
-    setOptionList(updated);
+    setNewQuestion(item.surveyQuestionText || "");
+    setEditId(item.surveyQuestionId);
   };
 
   // SAVE (ADD OR UPDATE)
-  const saveQuestion = () => {
-    if (newQuestion.trim() === "") return;
-
-    if (editIndex !== null) {
-      // UPDATE MODE
-      const updated = [...questionsList];
-      updated[editIndex].question = newQuestion;
-      updated[editIndex].options = optionList;
-      setQuestionsList(updated);
-    } else {
-      // ADD MODE
-      setQuestionsList([
-        ...questionsList,
-        {
-          question: newQuestion,
-          options: optionList,
-          isLive: false,
-          surveys: []
-        }
-      ]);
+  const saveQuestion = async () => {
+    if (newQuestion.trim() === "") {
+      alert("Question text is required");
+      return;
     }
 
-    // RESET
-    setNewQuestion("");
-    setNewOption("");
-    setOptionList([]);
-    setEditIndex(null);
-    setShowForm(false);
+    const questionData = {
+      surveyQuestionText: newQuestion,
+    };
+
+    let result;
+    if (editId !== null) {
+      // UPDATE MODE
+      result = await updateSurveyQuestion(editId, questionData);
+    } else {
+      // ADD MODE
+      result = await createSurveyQuestion(questionData);
+    }
+
+    if (result.success) {
+      // RESET
+      setNewQuestion("");
+      setEditId(null);
+      setShowForm(false);
+    } else {
+      alert(`Failed to save question: ${result.error}`);
+    }
   };
 
   return (
@@ -162,14 +107,49 @@ const SurveyQuestions = () => {
           className="add-btn"
           onClick={() => {
             setShowForm(!showForm);
-            setEditIndex(null);
+            setEditId(null);
             setNewQuestion("");
-            setOptionList([]);
           }}
         >
           Add Question
         </button>
       </div>
+
+      {/* ERROR MESSAGE */}
+      {error && (
+        <div style={{
+          background: "#f8d7da",
+          color: "#721c24",
+          padding: "12px",
+          borderRadius: "4px",
+          marginBottom: "15px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}>
+          <span>{error}</span>
+          <button
+            onClick={clearError}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#721c24",
+              fontSize: "18px",
+              cursor: "pointer",
+              fontWeight: "bold"
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* LOADING */}
+      {loading && (
+        <div style={{ textAlign: "center", padding: "20px" }}>
+          <span>Loading...</span>
+        </div>
+      )}
 
       {/* FORM */}
       {showForm && (
@@ -183,68 +163,14 @@ const SurveyQuestions = () => {
             className="question-input"
           />
 
-          <div className="option-row">
-            <input
-              type="text"
-              placeholder="Options here"
-              value={newOption}
-              onChange={(e) => setNewOption(e.target.value)}
-              className="option-input"
-            />
-
-            <button
-              type="button"
-              className="plus-btn"
-              onClick={addOption}
-            >
-              +
-            </button>
-
-            <button
-              type="button"
-              className="add-question-btn"
-              onClick={saveQuestion}
-            >
-              {editIndex !== null ? "Update Question" : "Add Question"}
-            </button>
-          </div>
-
-          {optionList.length > 0 && (
-            <div style={{ marginTop: "10px" }}>
-              {optionList.map((opt, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    background: "#f4f4f4",
-                    padding: "6px 10px",
-                    borderRadius: "4px",
-                    marginBottom: "5px"
-                  }}
-                >
-                  <span>• {opt}</span>
-
-                  <button
-                    onClick={() => removeOption(i)}
-                    style={{
-                      background: "#dc3545",
-                      border: "none",
-                      color: "white",
-                      borderRadius: "50%",
-                      width: "22px",
-                      height: "22px",
-                      cursor: "pointer",
-                      fontSize: "12px"
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          <button
+            type="button"
+            className="add-question-btn"
+            onClick={saveQuestion}
+            style={{ marginTop: "10px" }}
+          >
+            {editId !== null ? "Update Question" : "Add Question"}
+          </button>
 
         </div>
       )}
@@ -255,74 +181,79 @@ const SurveyQuestions = () => {
           <tr>
             <th>Sr. No.</th>
             <th>Question</th>
-            <th>Status</th>
-            <th>Live In</th>
+            {/* <th>Status</th> */}
+            {/* <th>Live In</th> */}
             <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
-          {questionsList.map((item, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-
-              <td>
-                <strong>{item.question}</strong>
-                {item.options.map((opt, i) => (
-                  <div key={i}>• {opt}</div>
-                ))}
-              </td>
-
-              <td>
-                <span className={item.isLive ? "badge green" : "badge red"}>
-                  {item.isLive ? "Live" : "Stopped"}
-                </span>
-
-                <button
-                  className="status-btn"
-                  onClick={() => toggleStatus(index)}
-                >
-                  {item.isLive ? "Stop" : "Start"}
-                </button>
-              </td>
-
-              <td>
-                {item.isLive ? (
-                  <button
-                    className="view-btn"
-                    onClick={() =>
-                      alert("Live In:\n" + item.surveys.join("\n"))
-                    }
-                  >
-                    View Surveys
-                  </button>
-                ) : (
-                  "-"
-                )}
-              </td>
-
-              <td>
-                <button
-                  className="edit-btn"
-                  onClick={() => handleUpdate(item, index)}
-                >
-                  Update
-                </button>
-
-                <button
-                  className="delete-btn"
-                  disabled={item.isLive}
-                  onClick={() => deleteQuestion(index)}
-                  style={{
-                    opacity: item.isLive ? 0.5 : 1,
-                    cursor: item.isLive ? "not-allowed" : "pointer"
-                  }}
-                >
-                  Delete
-                </button>
+          {surveyQuestions.length === 0 && !loading ? (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center", padding: "20px" }}>
+                No questions found. Add your first question!
               </td>
             </tr>
-          ))}
+          ) : (
+            surveyQuestions.map((item, index) => (
+              <tr key={item.surveyQuestionId}>
+                <td>{index + 1}</td>
+
+                <td>
+                  <strong>{item.surveyQuestionText}</strong>
+                </td>
+
+                {/* <td>
+                  <span className={item.status ? "badge green" : "badge red"}>
+                    {item.status ? "Live" : "Stopped"}
+                  </span>
+
+                  <button
+                    className="status-btn"
+                    onClick={() => toggleStatus(item.surveyQuestionId)}
+                  >
+                    {item.status ? "Stop" : "Start"}
+                  </button>
+                </td> */}
+
+                {/* <td>
+                  {item.status ? (
+                    <button
+                      className="view-btn"
+                      onClick={() =>
+                        alert("Live In:\n" + (item.surveys ? item.surveys.join("\n") : "No active surveys"))
+                      }
+                    >
+                      View Surveys
+                    </button>
+                  ) : (
+                    "-"
+                  )}
+                </td> */}
+
+                <td>
+                  <button
+                    className="edit-btn"
+                    onClick={() => handleUpdate(item)}
+                  >
+                    Update
+                  </button>
+
+                  <button
+                    className="delete-btn"
+                    disabled={item.status}
+                    onClick={() => handleDelete(item.surveyQuestionId, item.status)}
+                    style={{
+                      opacity: item.status ? 0.5 : 1,
+                      cursor: item.status ? "not-allowed" : "pointer"
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
