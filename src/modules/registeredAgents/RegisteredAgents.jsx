@@ -58,7 +58,7 @@ const RegisteredAgents = () => {
       ></iframe>
     `);
   };
-
+console.log(users)
   return (
     <Layout>
       <h2>Registered Agents</h2>

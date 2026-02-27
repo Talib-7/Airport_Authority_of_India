@@ -4,60 +4,12 @@ import "./generalQuestions.css";
 
 const GeneralQuestions = () => {
 
-  const [questionsList, setQuestionsList] = useState([
-    {
-      question: "How was your airport experience?",
-      options: ["Good", "Average", "Bad"],
-      isLive: true,
-      surveys: ["Passenger Survey 2024", "Service Quality Survey"]
-    },
-    {
-      question: "Was staff helpful?",
-      options: ["Yes", "No"],
-      isLive: false,
-      surveys: []
-    }
-  ]);
-
-  // FORM STATES
+  const [questionsList, setQuestionsList] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
   const [newOption, setNewOption] = useState("");
   const [optionList, setOptionList] = useState([]);
-  const [editIndex, setEditIndex] = useState(null); // 🔥 EDIT MODE
-
-  // STATUS TOGGLE
-  const toggleStatus = (index) => {
-    const updated = [...questionsList];
-    updated[index].isLive = !updated[index].isLive;
-
-    if (!updated[index].isLive) {
-      updated[index].surveys = [];
-    } else {
-      updated[index].surveys = ["New Live Survey"];
-    }
-
-    setQuestionsList(updated);
-  };
-
-  // DELETE
-  const deleteQuestion = (index) => {
-    const updated = questionsList.filter((_, i) => i !== index);
-    setQuestionsList(updated);
-  };
-
-  // OPEN EDIT MODE
-  const handleUpdate = (item, index) => {
-    if (item.isLive) {
-      alert("Stop the survey first before updating.");
-      return;
-    }
-
-    setShowForm(true);
-    setNewQuestion(item.question);
-    setOptionList(item.options);
-    setEditIndex(index);
-  };
+  const [editIndex, setEditIndex] = useState(null);
 
   // ADD OPTION
   const addOption = () => {
@@ -78,20 +30,18 @@ const GeneralQuestions = () => {
     if (newQuestion.trim() === "") return;
 
     if (editIndex !== null) {
-      // UPDATE MODE
       const updated = [...questionsList];
-      updated[editIndex].question = newQuestion;
-      updated[editIndex].options = optionList;
+      updated[editIndex] = {
+        question: newQuestion,
+        options: optionList
+      };
       setQuestionsList(updated);
     } else {
-      // ADD MODE
       setQuestionsList([
         ...questionsList,
         {
           question: newQuestion,
-          options: optionList,
-          isLive: false,
-          surveys: []
+          options: optionList
         }
       ]);
     }
@@ -102,6 +52,20 @@ const GeneralQuestions = () => {
     setOptionList([]);
     setEditIndex(null);
     setShowForm(false);
+  };
+
+  // DELETE
+  const deleteQuestion = (index) => {
+    const updated = questionsList.filter((_, i) => i !== index);
+    setQuestionsList(updated);
+  };
+
+  // EDIT
+  const handleUpdate = (item, index) => {
+    setShowForm(true);
+    setNewQuestion(item.question);
+    setOptionList(item.options);
+    setEditIndex(index);
   };
 
   return (
@@ -207,74 +171,47 @@ const GeneralQuestions = () => {
           <tr>
             <th>Sr. No.</th>
             <th>Question</th>
-            <th>Status</th>
-            <th>Live In</th>
             <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
-          {questionsList.map((item, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
+          {questionsList.length > 0 ? (
+            questionsList.map((item, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
 
-              <td>
-                <strong>{item.question}</strong>
-                {item.options.map((opt, i) => (
-                  <div key={i}>• {opt}</div>
-                ))}
-              </td>
+                <td>
+                  <strong>{item.question}</strong>
+                  {item.options.map((opt, i) => (
+                    <div key={i}>• {opt}</div>
+                  ))}
+                </td>
 
-              <td>
-                <span className={item.isLive ? "badge green" : "badge red"}>
-                  {item.isLive ? "Live" : "Stopped"}
-                </span>
-
-                <button
-                  className="status-btn"
-                  onClick={() => toggleStatus(index)}
-                >
-                  {item.isLive ? "Stop" : "Start"}
-                </button>
-              </td>
-
-              <td>
-                {item.isLive ? (
+                <td>
                   <button
-                    className="view-btn"
-                    onClick={() =>
-                      alert("Live In:\n" + item.surveys.join("\n"))
-                    }
+                    className="edit-btn"
+                    onClick={() => handleUpdate(item, index)}
                   >
-                    View Surveys
+                    Update
                   </button>
-                ) : (
-                  "-"
-                )}
-              </td>
 
-              <td>
-                <button
-                  className="edit-btn"
-                  onClick={() => handleUpdate(item, index)}
-                >
-                  Update
-                </button>
-
-                <button
-                  className="delete-btn"
-                  disabled={item.isLive}
-                  onClick={() => deleteQuestion(index)}
-                  style={{
-                    opacity: item.isLive ? 0.5 : 1,
-                    cursor: item.isLive ? "not-allowed" : "pointer"
-                  }}
-                >
-                  Delete
-                </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => deleteQuestion(index)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="3" className="no-record">
+                No Record Found
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
