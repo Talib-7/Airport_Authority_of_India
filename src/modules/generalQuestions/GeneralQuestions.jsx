@@ -10,6 +10,7 @@ const GeneralQuestions = () => {
   const [newOption, setNewOption] = useState("");
   const [optionList, setOptionList] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const [questionType, setQuestionType] = useState("radio"); // NEW STATE
 
   // ADD OPTION
   const addOption = () => {
@@ -29,21 +30,18 @@ const GeneralQuestions = () => {
   const saveQuestion = () => {
     if (newQuestion.trim() === "") return;
 
+    const questionObject = {
+      question: newQuestion,
+      type: questionType,
+      options: questionType === "radio" ? optionList : []
+    };
+
     if (editIndex !== null) {
       const updated = [...questionsList];
-      updated[editIndex] = {
-        question: newQuestion,
-        options: optionList
-      };
+      updated[editIndex] = questionObject;
       setQuestionsList(updated);
     } else {
-      setQuestionsList([
-        ...questionsList,
-        {
-          question: newQuestion,
-          options: optionList
-        }
-      ]);
+      setQuestionsList([...questionsList, questionObject]);
     }
 
     // RESET
@@ -52,6 +50,7 @@ const GeneralQuestions = () => {
     setOptionList([]);
     setEditIndex(null);
     setShowForm(false);
+    setQuestionType("radio");
   };
 
   // DELETE
@@ -64,7 +63,8 @@ const GeneralQuestions = () => {
   const handleUpdate = (item, index) => {
     setShowForm(true);
     setNewQuestion(item.question);
-    setOptionList(item.options);
+    setOptionList(item.options || []);
+    setQuestionType(item.type || "radio");
     setEditIndex(index);
   };
 
@@ -81,6 +81,7 @@ const GeneralQuestions = () => {
             setEditIndex(null);
             setNewQuestion("");
             setOptionList([]);
+            setQuestionType("radio");
           }}
         >
           Add Question
@@ -99,66 +100,114 @@ const GeneralQuestions = () => {
             className="question-input"
           />
 
-          <div className="option-row">
-            <input
-              type="text"
-              placeholder="Options here"
-              value={newOption}
-              onChange={(e) => setNewOption(e.target.value)}
-              className="option-input"
-            />
+          {/* QUESTION TYPE */}
+          <div style={{ margin: "10px 0" }}>
+            <label style={{ marginRight: "20px" }}>
+              <input
+                type="radio"
+                value="radio"
+                checked={questionType === "radio"}
+                onChange={(e) => {
+                  setQuestionType(e.target.value);
+                }}
+              />
+              Radio
+            </label>
 
-            <button
-              type="button"
-              className="plus-btn"
-              onClick={addOption}
-            >
-              +
-            </button>
-
-            <button
-              type="button"
-              className="add-question-btn"
-              onClick={saveQuestion}
-            >
-              {editIndex !== null ? "Update Question" : "Add Question"}
-            </button>
+            <label>
+              <input
+                type="radio"
+                value="text"
+                checked={questionType === "text"}
+                onChange={(e) => {
+                  setQuestionType(e.target.value);
+                  if (e.target.value === "text") {
+                    setOptionList([]);
+                  }
+                }}
+              />
+              Text
+            </label>
           </div>
 
-          {optionList.length > 0 && (
-            <div style={{ marginTop: "10px" }}>
-              {optionList.map((opt, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    background: "#f4f4f4",
-                    padding: "6px 10px",
-                    borderRadius: "4px",
-                    marginBottom: "5px"
-                  }}
-                >
-                  <span>• {opt}</span>
+          {/* OPTIONS (ONLY FOR RADIO TYPE) */}
+          {questionType === "radio" && (
+            <>
+              <div className="option-row">
+                <input
+                  type="text"
+                  placeholder="Options here"
+                  value={newOption}
+                  onChange={(e) => setNewOption(e.target.value)}
+                  className="option-input"
+                />
 
-                  <button
-                    onClick={() => removeOption(i)}
-                    style={{
-                      background: "#dc3545",
-                      border: "none",
-                      color: "white",
-                      borderRadius: "50%",
-                      width: "22px",
-                      height: "22px",
-                      cursor: "pointer",
-                      fontSize: "12px"
-                    }}
-                  >
-                    ×
-                  </button>
+                <button
+                  type="button"
+                  className="plus-btn"
+                  onClick={addOption}
+                >
+                  +
+                </button>
+
+                <button
+                  type="button"
+                  className="add-question-btn"
+                  onClick={saveQuestion}
+                >
+                  {editIndex !== null ? "Update Question" : "Add Question"}
+                </button>
+              </div>
+
+              {optionList.length > 0 && (
+                <div style={{ marginTop: "10px" }}>
+                  {optionList.map((opt, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        background: "#f4f4f4",
+                        padding: "6px 10px",
+                        borderRadius: "4px",
+                        marginBottom: "5px"
+                      }}
+                    >
+                      <span>• {opt}</span>
+
+                      <button
+                        onClick={() => removeOption(i)}
+                        style={{
+                          background: "#dc3545",
+                          border: "none",
+                          color: "white",
+                          borderRadius: "50%",
+                          width: "22px",
+                          height: "22px",
+                          cursor: "pointer",
+                          fontSize: "12px"
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+            </>
+          )}
+
+          {/* SAVE BUTTON FOR TEXT TYPE */}
+          {questionType === "text" && (
+            <div style={{ marginTop: "10px" }}>
+              <button
+                type="button"
+                className="add-question-btn"
+                onClick={saveQuestion}
+              >
+                {editIndex !== null ? "Update Question" : "Add Question"}
+              </button>
             </div>
           )}
 
@@ -166,11 +215,13 @@ const GeneralQuestions = () => {
       )}
 
       {/* TABLE */}
+      {/* TABLE */}
       <table className="data-table">
         <thead>
           <tr>
             <th>Sr. No.</th>
             <th>Question</th>
+            <th>Type</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -181,13 +232,20 @@ const GeneralQuestions = () => {
               <tr key={index}>
                 <td>{index + 1}</td>
 
+                {/* QUESTION COLUMN */}
                 <td>
                   <strong>{item.question}</strong>
-                  {item.options.map((opt, i) => (
-                    <div key={i}>• {opt}</div>
-                  ))}
+
+                  {item.type === "radio" &&
+                    item.options.map((opt, i) => (
+                      <div key={i}>• {opt}</div>
+                    ))}
                 </td>
 
+                {/* TYPE COLUMN */}
+                <td>{item.type}</td>
+
+                {/* ACTIONS */}
                 <td>
                   <button
                     className="edit-btn"
@@ -207,7 +265,7 @@ const GeneralQuestions = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="3" className="no-record">
+              <td colSpan="4" className="no-record">
                 No Record Found
               </td>
             </tr>
