@@ -142,6 +142,15 @@ const Sidebar = () => {
           )}
         </NavLink>
 
+        <NavLink to="/survey-history" style={{ textDecoration: "none", color: "inherit" }}>
+          {({ isActive }) => (
+            <li className={isActive ? "active" : ""}>
+              <MdCheckCircle className="menu-icon" />
+              Survey History
+            </li>
+          )}
+        </NavLink>
+
       </ul>
     </aside>
   );
