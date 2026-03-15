@@ -14,6 +14,10 @@ import ApprovedAgents from "./modules/approvedAgents/ApprovedAgents"
 import CreateUser from "./modules/createUser/CreateUser";
 import AgentHistory from "./modules/agentHistory/AgentHistory";
 import GeneralQuestions from "./modules/generalQuestions/GeneralQuestions";
+import SurveyManagement from "./modules/surveyManagement/SurveyManagement";
+import CreateFeedback from "./modules/createFeedback/CreateFeedback";
+import FeedbackForm from "./modules/feedbackForm/FeedbackForm";
+import SurveyHistory from "./modules/surveyHistory/SurveyHistory";
 
 function App() {
   // const navigate = useNavigate();
@@ -40,6 +44,11 @@ function App() {
       <Route path="/create-user" element={<CreateUser />} />  
       <Route path="/agent-history" element={<AgentHistory />} />
       <Route path="/general-questions" element={<GeneralQuestions />} />  
+      <Route path="/survey-management" element={<SurveyManagement />} />
+      <Route path="/create-feedback" element={<CreateFeedback />} />
+      <Route path="/feedback-form" element={<FeedbackForm />} />
+      <Route path="/survey-history" element={<SurveyHistory />}/>
+
     </Routes>
 
   );
