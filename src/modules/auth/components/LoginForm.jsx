@@ -11,22 +11,22 @@ const LoginForm = () => {
     password: ""
   });
 
-  // const login = async () => {
-  //   const result = await authLogin({
-  //     email: formaData.username,
-  //     password: formaData.password
-  //   });
+  const login = async () => {
+    const result = await authLogin({
+      email: formaData.username,
+      password: formaData.password
+    });
     
-  //   if (result.success) {
-  //     navigate("/dashboard");
-  //   }
-  // }
-  
-  const login = () => {
-    if (formaData.username == "Talib" && formaData.password == "Talib@123"){
+    if (result.success) {
       navigate("/dashboard");
     }
   }
+  
+  // const login = () => {
+  //   if (formaData.username == "Talib" && formaData.password == "Talib@123"){
+  //     navigate("/dashboard");
+  //   }
+  // }
 
   return (
     <div className="login-box">
