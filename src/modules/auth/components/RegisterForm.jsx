@@ -61,7 +61,7 @@ const RegisterForm = () => {
     alert("Registration Successful!");
 
     // 🔥 Redirect to Login Page After OK
-    navigate("/");
+    // navigate("/");
 
     // Reset form
     setFormData({

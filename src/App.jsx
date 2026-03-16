@@ -1,6 +1,6 @@
 import LoginPage from "./modules/auth/pages/LoginPage";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 //for Registration page
 import { Routes, Route } from "react-router-dom";
 import RegisterPage from "./modules/auth/pages/RegisterPage";
@@ -20,13 +20,19 @@ import FeedbackForm from "./modules/feedbackForm/FeedbackForm";
 import SurveyHistory from "./modules/surveyHistory/SurveyHistory";
 
 function App() {
-  // const navigate = useNavigate();
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     navigate("/");
-  //   }
-  // }, [navigate]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Public routes that don't need authentication
+    const publicRoutes = ["/", "/login", "/register", "/forgot"];
+    const isPublicRoute = publicRoutes.includes(location.pathname);
+    
+    const token = localStorage.getItem("token");
+    if (!token && !isPublicRoute) {
+      navigate("/");
+    }
+  }, [navigate, location.pathname]);
   return (
     
     <Routes>
