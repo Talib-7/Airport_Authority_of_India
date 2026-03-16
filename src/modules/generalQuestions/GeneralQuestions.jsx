@@ -114,20 +114,49 @@ const GeneralQuestions = () => {
               Radio
             </label>
 
-            <label>
+              {/* 
+            <label style={{ marginRight: "20px" }}>
               <input
                 type="radio"
                 value="text"
                 checked={questionType === "text"}
                 onChange={(e) => {
                   setQuestionType(e.target.value);
-                  if (e.target.value === "text") {
+                }}
+              />
+              Select/Dropdown
+            </label>
+            */ }
+
+            <label style={{ marginRight: "20px" }}>
+              <input
+                type="radio"
+                value="TEXT"
+                checked={questionType === "TEXT"}
+                onChange={(e) => {
+                  setQuestionType(e.target.value);
+                  if (e.target.value === "TEXT" || e.target.value === "RATING") {
                     setOptionList([]);
                   }
                 }}
               />
               Text
             </label>
+
+            {/* <label>
+              <input
+                type="radio"
+                value="RATING"
+                checked={questionType === "RATING"}
+                onChange={(e) => {
+                  setQuestionType(e.target.value);
+                  if (e.target.value === "TEXT" || e.target.value === "RATING") {
+                    setOptionList([]);
+                  }
+                }}
+              />
+              Rating
+            </label> */}
           </div>
 
           {/* OPTIONS (ONLY FOR RADIO TYPE) */}
@@ -222,7 +251,7 @@ const GeneralQuestions = () => {
             <th>Sr. No.</th>
             <th>Question</th>
             <th>Type</th>
-            <th>Actions</th>
+            {/* <th>Actions</th> */}
           </tr>
         </thead>
 
@@ -246,13 +275,13 @@ const GeneralQuestions = () => {
                 <td>{item.type}</td>
 
                 {/* ACTIONS */}
-                <td>
+                {/* <td>
                   <button
                     className="edit-btn"
                     onClick={() => handleUpdate(item, index)}
                   >
                     Update
-                  </button>
+                  </button> 
 
                   <button
                     className="delete-btn"
@@ -260,7 +289,7 @@ const GeneralQuestions = () => {
                   >
                     Delete
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))
           ) : (
