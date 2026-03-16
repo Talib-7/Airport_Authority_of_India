@@ -95,7 +95,6 @@ const SurveyRunning = () => {
             <th>Start Date</th>
             <th>End Date</th>
             <th>Status</th>
-            <th>Live Airports</th>
           </tr>
         </thead>
 
@@ -135,7 +134,7 @@ const SurveyRunning = () => {
       </table>
 
       {/* 🔥 Airport Modal */}
-      {activeAirports && (
+      {/* {activeAirports && (
         <div className="survey-modal">
           <div className="survey-modal-box">
             <h3>Live Airports</h3>
@@ -154,7 +153,7 @@ const SurveyRunning = () => {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
     </Layout>
   );
