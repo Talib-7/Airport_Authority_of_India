@@ -1,194 +1,227 @@
 import { useEffect, useState } from "react";
 import Layout from "../layout/Layout";
+import generalQuestionsService from "../generalQuestions/services/generalQuestionsService";
+import surveyQuestionsService from "../surveyQuestions/services/surveyQuestionsService";
+import surveyManagementService from "./services/surveyManagementService";
 import "./surveyManagement.css";
-
-const airports = [
-  "Delhi",
-  "Mumbai",
-  "Bangalore",
-  "Hyderabad",
-  "Chennai",
-  "Kolkata"
-];
 
 const today = new Date().toISOString().split("T")[0];
 
-const SurveyManagement = () => {
+const getErrorMessage = (error, fallbackMessage) => {
+  const message = error.response?.data?.message || fallbackMessage;
+  return Array.isArray(message) ? message.join(", ") : message;
+};
 
+
+
+const SurveyManagement = () => {
   const [surveys, setSurveys] = useState([]);
   const [generalQuestions, setGeneralQuestions] = useState([]);
   const [surveyQuestions, setSurveyQuestions] = useState([]);
+  const [airports, setAirports] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("survey");
 
   const [surveyName, setSurveyName] = useState("");
-  const [selectedSurvey, setSelectedSurvey] = useState([]);
-  const [selectedGeneral, setSelectedGeneral] = useState([]);
+  const [selectedSurveyIds, setSelectedSurveyIds] = useState([]);
+  const [selectedGeneralIds, setSelectedGeneralIds] = useState([]);
+  const [editingSurveyId, setEditingSurveyId] = useState(null);
 
-  const [liveSurveyId,setLiveSurveyId]=useState(null);
-  const [startDate,setStartDate]=useState("");
-  const [endDate,setEndDate]=useState("");
-  const [selectedAirports,setSelectedAirports]=useState([]);
+  const [liveSurveyId, setLiveSurveyId] = useState(null);
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState("");
+  const [selectedAirportIds, setSelectedAirportIds] = useState([]);
 
-  useEffect(() => {
+  const [viewPopup, setViewPopup] = useState(null); // { title, items, labelKey }
 
-    const storedSurveys =
-      JSON.parse(localStorage.getItem("surveys")) || [];
+  const loadSurveyManagementData = async () => {
+    setLoading(true);
+    setError("");
 
-    const storedGeneral =
-      JSON.parse(localStorage.getItem("generalQuestions")) || [];
+    try {
+      const [surveysData, generalData, surveyData, airportsData] = await Promise.all([
+        surveyManagementService.findAll(),
+        generalQuestionsService.findAll(),
+        surveyQuestionsService.findAll(),
+        surveyManagementService.fetchAirports(),
+      ]);
 
-    const storedSurvey =
-      JSON.parse(localStorage.getItem("surveyQuestions")) || [];
-
-    setSurveys(storedSurveys);
-    setGeneralQuestions(storedGeneral);
-    setSurveyQuestions(storedSurvey);
-
-  }, []);
-
-  const saveSurveys = (data) => {
-    setSurveys(data);
-    localStorage.setItem("surveys", JSON.stringify(data));
+      setSurveys(Array.isArray(surveysData) ? surveysData : []);
+      setGeneralQuestions(Array.isArray(generalData) ? generalData : []);
+      setSurveyQuestions(Array.isArray(surveyData) ? surveyData : []);
+      setAirports(Array.isArray(airportsData) ? airportsData : []);
+    } catch (fetchError) {
+      setError(getErrorMessage(fetchError, "Failed to load survey management data"));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // CREATE SURVEY
+  useEffect(() => {
+    loadSurveyManagementData();
+  }, []);
 
-  const createSurvey = () => {
+  const resetSurveyForm = () => {
+    setEditingSurveyId(null);
+    setSurveyName("");
+    setSelectedSurveyIds([]);
+    setSelectedGeneralIds([]);
+    setActiveTab("survey");
+  };
 
+  const closeSurveyModal = () => {
+    setShowModal(false);
+    resetSurveyForm();
+  };
+
+  const openCreateModal = () => {
+    resetSurveyForm();
+    setShowModal(true);
+  };
+
+  const openEditModal = (survey) => {
+    setEditingSurveyId(survey.surveyId);
+    setSurveyName(survey.surveyName);
+    setSelectedSurveyIds(survey.surveyQuestions.map((item) => item.surveyQuestionId));
+    setSelectedGeneralIds(survey.generalQuestions.map((item) => item.id));
+    setActiveTab("survey");
+    setShowModal(true);
+  };
+
+  const toggleSelection = (value, currentValues, setter) => {
+    if (currentValues.includes(value)) {
+      setter(currentValues.filter((item) => item !== value));
+      return;
+    }
+
+    setter([...currentValues, value]);
+  };
+
+  const saveSurvey = async () => {
     if (surveyName.trim() === "") {
       alert("Enter Survey Name");
       return;
     }
 
-    const newSurvey = {
-
-      id: Date.now(),
-      surveyName,
-      surveyQuestions: selectedSurvey,
-      generalQuestions: selectedGeneral,
-      startDate:null,
-      endDate:null,
-      airports:[],
-      isLive:false,
-      hasBeenLive:false
-
-    };
-
-    const updated = [...surveys, newSurvey];
-
-    saveSurveys(updated);
-
-    alert("Survey Created Successfully");
-
-    setShowModal(false);
-    setSurveyName("");
-    setSelectedSurvey([]);
-    setSelectedGeneral([]);
-
-  };
-
-
-  // MAKE LIVE
-
-  const makeLive=(id)=>{
-    setLiveSurveyId(id);
-  };
-
-  const confirmLive=()=>{
-
-    if(!startDate){
-    alert("Select Start Date");
-    return;
-  }
-
-  if(startDate < today){
-    alert("Start Date cannot be before today");
-    return;
-  }
-
-  if(!endDate){
-    alert("Select End Date");
-    return;
-  }
-
-  if(endDate <= startDate){
-    alert("End Date must be greater than Start Date");
-    return;
-  }
-
-  if(selectedAirports.length===0){
-    alert("Select at least one Airport");
-    return;
-  }
-
-    const updated=[...surveys];
-
-    const index=updated.findIndex(s=>s.id===liveSurveyId);
-
-    if(index!==-1){
-
-      updated[index].startDate=startDate;
-      updated[index].endDate=endDate;
-      updated[index].airports=selectedAirports;
-      updated[index].isLive=true;
-      updated[index].hasBeenLive=true;
-
+    if (selectedSurveyIds.length === 0) {
+      alert("Select at least one survey question");
+      return;
     }
 
-    saveSurveys(updated);
+    setSubmitting(true);
+    setError("");
 
-    setLiveSurveyId(null);
-    setStartDate("");
+    try {
+      const payload = {
+        surveyName: surveyName.trim(),
+        surveyQuestionIds: selectedSurveyIds,
+        generalQuestionIds: selectedGeneralIds,
+      };
+
+      if (editingSurveyId) {
+        await surveyManagementService.update(editingSurveyId, payload);
+        alert("Survey updated successfully");
+      } else {
+        await surveyManagementService.create(payload);
+        alert("Survey created successfully");
+      }
+
+      closeSurveyModal();
+      await loadSurveyManagementData();
+    } catch (saveError) {
+      setError(getErrorMessage(saveError, "Failed to save survey"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const openLiveModal = (surveyId) => {
+    setLiveSurveyId(surveyId);
+    setStartDate(today);
     setEndDate("");
-    setSelectedAirports([]);
-
+    setSelectedAirportIds([]);
   };
 
-  // STOP
+  const closeLiveModal = () => {
+    setLiveSurveyId(null);
+    setStartDate(today);
+    setEndDate("");
+    setSelectedAirportIds([]);
+  };
 
-    const stopSurvey=(id)=>{
-
-    const updated=[...surveys];
-
-    const index=updated.findIndex(s=>s.id===id);
-
-    if(index!==-1){
-
-    const stoppedSurvey = updated[index];
-
-    updated[index].isLive=false;
-
-    // get history
-    const history =
-    JSON.parse(localStorage.getItem("surveyHistory")) || [];
-
-    // copy survey
-    history.push({
-    ...stoppedSurvey,
-    status:"Completed",
-    stoppedAt:new Date().toLocaleString()
-    });
-
-    // save history
-    localStorage.setItem(
-    "surveyHistory",
-    JSON.stringify(history)
-    );
-
+  const confirmLive = async () => {
+    if (!startDate) {
+      alert("Select Start Date");
+      return;
     }
 
-    saveSurveys(updated);
+    if (startDate < today) {
+      alert("Start Date cannot be before today");
+      return;
+    }
 
-    };
+    if (!endDate) {
+      alert("Select End Date");
+      return;
+    }
 
+    if (endDate <= startDate) {
+      alert("End Date must be greater than Start Date");
+      return;
+    }
 
-  // SORT LIVE FIRST
+    if (selectedAirportIds.length === 0) {
+      alert("Select at least one Airport");
+      return;
+    }
 
-  const sortedSurveys=[...surveys].sort(
-    (a,b)=>b.isLive-a.isLive
-  );
+    setSubmitting(true);
+    setError("");
+
+    try {
+      await surveyManagementService.makeLive(liveSurveyId, {
+        startDate,
+        endDate,
+        airportIds: selectedAirportIds,
+      });
+
+      alert("Survey is now live");
+      closeLiveModal();
+      await loadSurveyManagementData();
+    } catch (liveError) {
+      setError(getErrorMessage(liveError, "Failed to make survey live"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const stopSurvey = async (surveyId) => {
+    setSubmitting(true);
+    setError("");
+
+    try {
+      await surveyManagementService.stop(surveyId);
+      alert("Survey stopped successfully");
+      await loadSurveyManagementData();
+    } catch (stopError) {
+      setError(getErrorMessage(stopError, "Failed to stop survey"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const sortedSurveys = [...surveys].sort((left, right) => {
+    if (left.status === right.status) {
+      return Number(right.surveyId) - Number(left.surveyId);
+    }
+
+    const statusOrder = { LIVE: 0, DRAFT: 1, COMPLETED: 2 };
+    return statusOrder[left.status] - statusOrder[right.status];
+  });
 
 
   return (
@@ -200,12 +233,15 @@ const SurveyManagement = () => {
 
         <button
           className="add-btn"
-          onClick={()=>setShowModal(true)}
+          onClick={openCreateModal}
         >
           Create Survey
         </button>
 
       </div>
+
+      {error && <div className="error-text">{error}</div>}
+      {loading && <div className="loading-text">Loading survey management data...</div>}
 
 
       {/* CREATE SURVEY MODAL */}
@@ -224,6 +260,7 @@ const SurveyManagement = () => {
       value={surveyName}
       onChange={(e)=>setSurveyName(e.target.value)}
       className="survey-input"
+      disabled={submitting}
       />
 
       <div className="tabs">
@@ -251,23 +288,15 @@ const SurveyManagement = () => {
 
       surveyQuestions.length>0 ?
 
-      surveyQuestions.map((q,i)=>(
-      <label key={i} className="checkbox">
+      surveyQuestions.map((q)=>(
+      <label key={q.surveyQuestionId} className="checkbox">
 
       <input
       type="checkbox"
+      checked={selectedSurveyIds.includes(q.surveyQuestionId)}
+      disabled={submitting}
       onChange={(e)=>{
-
-      if(e.target.checked){
-      setSelectedSurvey([...selectedSurvey,q]);
-      }else{
-      setSelectedSurvey(
-      selectedSurvey.filter(
-      item=>item.surveyQuestionText!==q.surveyQuestionText
-      )
-      );
-      }
-
+      toggleSelection(q.surveyQuestionId, selectedSurveyIds, setSelectedSurveyIds);
       }}
       />
 
@@ -287,27 +316,19 @@ const SurveyManagement = () => {
 
       generalQuestions.length>0 ?
 
-      generalQuestions.map((q,i)=>(
-      <label key={i} className="checkbox">
+      generalQuestions.map((q)=>(
+      <label key={q.id} className="checkbox">
 
       <input
       type="checkbox"
+      checked={selectedGeneralIds.includes(q.id)}
+      disabled={submitting}
       onChange={(e)=>{
-
-      if(e.target.checked){
-      setSelectedGeneral([...selectedGeneral,q]);
-      }else{
-      setSelectedGeneral(
-      selectedGeneral.filter(
-      item=>item.question!==q.question
-      )
-      );
-      }
-
+      toggleSelection(q.id, selectedGeneralIds, setSelectedGeneralIds);
       }}
       />
 
-      {q.question}
+      {q.questionText}
 
       </label>
       ))
@@ -325,14 +346,16 @@ const SurveyManagement = () => {
 
       <button
       className="create-btn"
-      onClick={createSurvey}
+      onClick={saveSurvey}
+      disabled={submitting}
       >
-      Create
+      {editingSurveyId ? "Update" : "Create"}
       </button>
 
       <button
       className="close-btn"
-      onClick={()=>setShowModal(false)}
+      onClick={closeSurveyModal}
+      disabled={submitting}
       >
       Cancel
       </button>
@@ -348,6 +371,7 @@ const SurveyManagement = () => {
 
       {/* SURVEY TABLE */}
 
+      <div className="table-wrapper">
       <table className="data-table">
 
         <thead>
@@ -355,10 +379,12 @@ const SurveyManagement = () => {
             <th>Sr No</th>
             <th>Survey ID</th>
             <th>Survey Name</th>
+            <th>Survey Questions</th>
+            <th>General Questions</th>
             <th>Start Date</th>
             <th>End Date</th>
             <th>Status</th>
-            <th>View Airport</th>
+            <th>Airports</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -368,69 +394,92 @@ const SurveyManagement = () => {
           {sortedSurveys.length>0?(
             sortedSurveys.map((survey,index)=>(
 
-              <tr key={survey.id}>
+              <tr key={survey.surveyId}>
 
                 <td>{index+1}</td>
-                <td>{survey.id}</td>
+                <td>{survey.surveyId}</td>
                 <td>{survey.surveyName}</td>
 
-                <td>{survey.isLive ? survey.startDate : "-"}</td>
-                <td>{survey.isLive ? survey.endDate : "-"}</td>
+                <td>
+                  <button
+                    className="view-btn"
+                    onClick={() => setViewPopup({ title: "Survey Questions", items: survey.surveyQuestions, labelKey: "surveyQuestionText" })}
+                    disabled={survey.surveyQuestions.length === 0}
+                  >
+                    View ({survey.surveyQuestions.length})
+                  </button>
+                </td>
 
                 <td>
-                {survey.isLive && (
-                <span className="live-badge">LIVE</span>
-                )}
+                  <button
+                    className="view-btn"
+                    onClick={() => setViewPopup({ title: "General Questions", items: survey.generalQuestions, labelKey: "questionText" })}
+                    disabled={survey.generalQuestions.length === 0}
+                  >
+                    View ({survey.generalQuestions.length})
+                  </button>
+                </td>
+
+                <td>{survey.startDate || "-"}</td>
+                <td>{survey.endDate || "-"}</td>
+
+                <td>
+                  <span
+                    className={`status-badge ${
+                      survey.status === "LIVE"
+                        ? "live-badge"
+                        : survey.status === "COMPLETED"
+                          ? "completed-badge"
+                          : "created-badge"
+                    }`}
+                  >
+                    {survey.status}
+                  </span>
+                </td>
+
+                <td>
+                  <button
+                    className="view-btn"
+                    onClick={() => setViewPopup({ title: "Airports", items: survey.airports, labelKey: "airportName" })}
+                    disabled={survey.airports.length === 0}
+                  >
+                    View ({survey.airports.length})
+                  </button>
                 </td>
 
                 <td>
 
-                {survey.isLive && survey.airports?.length>0
-                ?(
-                <button
-                className="view-btn"
-                onClick={()=>alert(survey.airports.join(", "))}
-                >
-                View
-                </button>
-                )
-                : "-"}
+                  {survey.status === "DRAFT" && (
+                    <>
+                      <button
+                        className="edit-btn"
+                        onClick={() => openEditModal(survey)}
+                        disabled={submitting}
+                      >
+                        Edit
+                      </button>
 
-                </td>
+                      <button
+                        className="live-btn"
+                        onClick={() => openLiveModal(survey.surveyId)}
+                        disabled={submitting}
+                      >
+                        Make Live
+                      </button>
+                    </>
+                  )}
 
-                <td>
+                  {survey.status === "LIVE" && (
+                    <button
+                      className="stop-btn"
+                      onClick={() => stopSurvey(survey.surveyId)}
+                      disabled={submitting}
+                    >
+                      Stop
+                    </button>
+                  )}
 
-                {!survey.hasBeenLive && !survey.isLive && (
-                <button
-                className="edit-btn"
-                onClick={()=>{
-                setShowModal(true);
-                setSurveyName(survey.surveyName);
-                setSelectedSurvey(survey.surveyQuestions);
-                setSelectedGeneral(survey.generalQuestions);
-                }}
-                >
-                Edit
-                </button>
-                )}
-
-                {!survey.isLive && (
-                <button
-                className="live-btn"
-                onClick={()=>makeLive(survey.id)}
-                >
-                Make Live
-                </button>
-                )}
-
-                {survey.isLive && (
-                <button
-                className="stop-btn"
-                onClick={()=>stopSurvey(survey.id)}
-                >
-                Stop
-                </button>
-                )}
+                  {survey.status === "COMPLETED" && "-"}
 
                 </td>
 
@@ -440,7 +489,7 @@ const SurveyManagement = () => {
           ) : (
 
           <tr>
-          <td colSpan="8" className="no-record">
+          <td colSpan="10" className="no-record">
           No Record Found
           </td>
           </tr>
@@ -450,6 +499,29 @@ const SurveyManagement = () => {
         </tbody>
 
       </table>
+  </div>
+
+
+      {/* VIEW POPUP */}
+
+      {viewPopup !== null && (
+        <div className="modal-overlay" onClick={() => setViewPopup(null)}>
+          <div className="view-popup-box" onClick={(e) => e.stopPropagation()}>
+            <div className="view-popup-header">
+              <h3>{viewPopup.title}</h3>
+              <button className="popup-close-btn" onClick={() => setViewPopup(null)}>✕</button>
+            </div>
+            <ul className="view-popup-list">
+              {viewPopup.items.map((item, index) => (
+                <li key={index} className="view-popup-item">
+                  <span className="view-popup-num">{index + 1}</span>
+                  {item[viewPopup.labelKey]}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
 
       {/* LIVE MODAL */}
@@ -457,10 +529,10 @@ const SurveyManagement = () => {
       {liveSurveyId!==null &&(
 
       <div className="modal-overlay"
-      onClick={()=>setShowModal(false)}
+  onClick={closeLiveModal}
       >
 
-      <div className="live-modal">
+  <div className="live-modal" onClick={(e) => e.stopPropagation()}>
 
       <h3 className="live-title">Make Survey Live</h3>
 
@@ -473,6 +545,7 @@ const SurveyManagement = () => {
       min={today}
       value={startDate}
       onChange={(e)=>setStartDate(e.target.value)}
+      disabled={submitting}
       />
       </div>
 
@@ -483,6 +556,7 @@ const SurveyManagement = () => {
       min={startDate || today}
       value={endDate}
       onChange={(e)=>setEndDate(e.target.value)}
+      disabled={submitting}
       />
       </div>
 
@@ -494,13 +568,14 @@ const SurveyManagement = () => {
 
       <input
       type="checkbox"
-      checked={selectedAirports.length===airports.length}
+      checked={airports.length > 0 && selectedAirportIds.length===airports.length}
+      disabled={submitting || airports.length === 0}
       onChange={(e)=>{
 
       if(e.target.checked){
-      setSelectedAirports(airports);
+      setSelectedAirportIds(airports.map((airport) => airport.airportId));
       }else{
-      setSelectedAirports([]);
+      setSelectedAirportIds([]);
       }
 
       }}
@@ -512,26 +587,19 @@ const SurveyManagement = () => {
 
       <div className="airport-grid">
 
-      {airports.map((a,i)=>(
-      <label key={i} className="checkbox airport-item">
+  {airports.map((airport)=>(
+  <label key={airport.airportId} className="checkbox airport-item">
 
       <input
       type="checkbox"
-      checked={selectedAirports.includes(a)}
+  checked={selectedAirportIds.includes(airport.airportId)}
+  disabled={submitting}
       onChange={(e)=>{
-
-      if(e.target.checked){
-      setSelectedAirports([...selectedAirports,a]);
-      }else{
-      setSelectedAirports(
-      selectedAirports.filter(item=>item!==a)
-      );
-      }
-
+  toggleSelection(airport.airportId, selectedAirportIds, setSelectedAirportIds);
       }}
       />
 
-      {a}
+  {airport.airportName}
 
       </label>
       ))}
@@ -543,8 +611,17 @@ const SurveyManagement = () => {
       <button
       className="create-btn"
       onClick={confirmLive}
+      disabled={submitting}
       >
       Confirm Live
+      </button>
+
+      <button
+      className="close-btn"
+      onClick={closeLiveModal}
+      disabled={submitting}
+      >
+      Cancel
       </button>
 
       </div>
