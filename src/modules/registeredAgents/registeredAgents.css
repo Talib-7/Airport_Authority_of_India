@@ -138,7 +138,7 @@
 /* Make table container scrollable */
 .dashboard-content {
   overflow-x: auto;
-  max-height: 500px;   /* height adjust kar sakte ho */
+  /*max-height: 500px; */   /* height adjust kar sakte ho */ 
   overflow-y: auto;
 }
 

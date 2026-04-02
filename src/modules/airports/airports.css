@@ -1,329 +1,449 @@
-/* ================= PAGE HEADING ================= */
-
-h2 {
-  font-size: 30px;
-  font-weight: 600;
-  margin-bottom: 18px;
-}
-
-/* ================= FORM CONTAINER ================= */
-
-.airport-form-container {
-  margin-top: 10px;
-  margin-bottom: 20px;
-  padding: 22px 28px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.96);
-  border: 1px solid #d6dde8;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-}
-
-/* ================= ROW STRUCTURE ================= */
-
-.airport-row {
+.airports-page {
   display: flex;
-  gap: 14px;
-  margin-bottom: 14px;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.airport-button-row {
+.airports-page.form-open {
+  height: 100%;
+  min-height: 0;
+}
+
+.airports-page.form-open .airport-form-shell {
+  flex: 1;
+  min-height: 0;
+}
+
+.airports-page.form-open .airport-form-grid {
+  flex: 1;
+  min-height: 0;
+}
+
+.airports-page.form-open {
+  height: 100%;
+}
+
+.airports-page.form-open .airport-form-shell {
+  flex: 1;
+  min-height: 0;
+}
+
+.airports-page.form-open .airport-form-grid {
+  height: 100%;
+}
+
+.airports-page.form-open .airport-panel {
+  height: 100%;
+}
+
+.airport-page-header {
   display: flex;
   justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.airport-page-header p {
+  margin-top: 8px;
+  max-width: 760px;
+  color: #51607b;
+  line-height: 1.5;
+}
+
+.airport-header-actions {
+  display: flex;
+  gap: 12px;
   align-items: center;
-  margin-top: 10px;
+  flex-wrap: wrap;
 }
 
-/* ================= INPUTS ================= */
-
-.airport-input {
-  padding: 9px 14px;
-  border-radius: 10px;
-  border: 1px solid #ccd3df;
-  background: #f5f7fa;
-  font-size: 14px;
+.airport-search-input {
+  min-width: 300px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #d4dce8;
+  padding: 0 14px;
+  background: #fff;
+  color: #08163f;
   outline: none;
-  height: 38px;
-  transition: 0.2s ease;
 }
 
-.airport-input:focus {
-  border-color: #0b1853;
-  background: white;
-  box-shadow: 0 0 0 2px rgba(11,24,83,0.08);
+.airport-search-input:focus {
+  border-color: #1e88e5;
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.12);
 }
 
-/* Size Control */
-
-.airport-input.large {
-  flex: 2;
-}
-
-.airport-input.medium {
-  flex: 1;
-}
-
-.airport-input.small {
-  flex: 1;
-}
-
-/* ================= BUTTONS ================= */
-
-.map-btn {
-  height: 36px;
-  padding: 0 18px;
-  border-radius: 8px;
-  border: 1px solid #ccd3df;
-  background: #e8edf5;
+.airport-alert {
+  padding: 12px 14px;
+  border-radius: 12px;
   font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s ease;
 }
 
-.map-btn:hover {
-  background: #dbe3f0;
+.airport-alert-error {
+  background: #fff1f1;
+  border: 1px solid #ffd0d0;
+  color: #9c1a1a;
 }
 
+.airport-form-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.airport-form-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1.1fr;
+  gap: 16px;
+}
+
+.airport-panel {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #dce3ef;
+  border-radius: 18px;
+  box-shadow: 0 16px 35px rgba(8, 22, 63, 0.08);
+  overflow: hidden;
+}
+
+.airport-map-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.airport-form-panel {
+  padding: 22px;
+}
+
+.airport-form-panel,
+.airport-map-panel {
+  min-height: 0;
+}
+
+.airport-form-panel h3 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  color: #08163f;
+}
+
+.airport-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.airport-field-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: #51607b;
+}
+
+.airport-field-grid input,
+.airport-field-grid select {
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #d4dce8;
+  padding: 0 12px;
+  font-size: 14px;
+  background: #f8fafc;
+  color: #08163f;
+  outline: none;
+}
+
+.airport-field-grid input:focus,
+.airport-field-grid select:focus {
+  border-color: #1e88e5;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.12);
+}
+
+.airport-status-field {
+  flex-direction: row !important;
+  align-items: center;
+  grid-column: span 2;
+  height: 42px;
+  padding: 0 4px;
+  border: 1px dashed #ccd7e6;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.airport-status-field input {
+  width: 16px;
+  height: 16px;
+  accent-color: #1e88e5;
+}
+
+.airport-form-footer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f3f7fc;
+}
+
+.airport-form-footer span,
+.airport-map-summary span {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7b95;
+  margin-bottom: 6px;
+}
+
+.airport-form-footer strong,
+.airport-map-summary strong {
+  font-size: 14px;
+  color: #08163f;
+}
+
+.airport-form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.primary-action-btn,
+.secondary-action-btn,
 .add-airport-btn {
-  height: 36px;
-  padding: 0 22px;
-  border-radius: 20px;
   border: none;
-  background: #0b1853;
-  color: white;
-  font-size: 14px;
+  border-radius: 12px;
+  height: 42px;
+  padding: 0 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
-.add-airport-btn:hover {
-  background: #162b7a;
+.primary-action-btn,
+.add-airport-btn {
+  background: linear-gradient(180deg, #0b1853, #08163f);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(11, 24, 83, 0.22);
 }
 
-/* ================= TABLE ================= */
+.secondary-action-btn {
+  background: #edf3fb;
+  color: #08163f;
+  border: 1px solid #d2dcec;
+}
+
+.primary-action-btn:hover,
+.secondary-action-btn:hover,
+.add-airport-btn:hover,
+.table-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.airport-map-panel {
+  min-height: 0;
+}
+
+.airport-map-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+}
+
+.airport-map-toast-container {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  width: min(560px, calc(100% - 24px));
+}
+
+.airport-map-toolbar {
+  padding: 18px 18px 0;
+}
+
+.airport-map-search {
+  display: flex;
+  gap: 10px;
+}
+
+.airport-map-search input {
+  flex: 1;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #d4dce8;
+  padding: 0 12px;
+  background: #f8fafc;
+}
+
+.airport-map-search button {
+  border: none;
+  border-radius: 12px;
+  padding: 0 16px;
+  background: #1e88e5;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.airport-map-hint {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #5e6f89;
+}
+
+.airport-leaflet-map {
+  margin: 16px 18px 0;
+  flex: 1;
+  min-height: 360px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #dbe4f2;
+}
+
+.airport-map-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 16px 18px 0;
+}
+
+.airport-map-feedback {
+  margin: 12px 18px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff7e6;
+  color: #8a5a00;
+  border: 1px solid #ffe0a3;
+  font-size: 13px;
+}
+
+.airport-area-warning {
+  color: #b42318;
+}
+
+.airport-map-summary {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 18px;
+}
+
+.airport-table-shell {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #dce3ef;
+  border-radius: 18px;
+  box-shadow: 0 16px 35px rgba(8, 22, 63, 0.08);
+  overflow: hidden;
+}
+
+.airport-empty-state {
+  padding: 26px 20px;
+  color: #51607b;
+}
 
 .airport-table {
   width: 100%;
   min-width: 1100px;
   border-collapse: collapse;
-  table-layout: fixed;
+}
+
+.airport-table th,
+.airport-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e7edf6;
+  text-align: left;
+  vertical-align: middle;
   font-size: 14px;
-  margin-top: 20px;
 }
 
 .airport-table th {
-  background: #eef1f5;
-  padding: 10px;
-  border: 1px solid #ddd;
-  font-weight: 600;
+  background: #f4f7fb;
+  color: #08163f;
+  font-weight: 700;
 }
 
-.airport-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  vertical-align: middle;
-  text-align: center;
+.airport-table tbody tr:hover {
+  background: #fafcff;
 }
 
-/* Column Width */
-
-.airport-table th:nth-child(1),
-.airport-table td:nth-child(1) {
-  width: 65px;
-}
-
-.airport-table th:nth-child(2),
-.airport-table td:nth-child(2) {
-  width: 26%;
-}
-
-.airport-table th:nth-child(3),
-.airport-table td:nth-child(3) {
-  width: 8%;
-}
-
-.airport-table th:nth-child(4),
-.airport-table td:nth-child(4) {
-  width: 8%;
-}
-
-.airport-table th:nth-child(5),
-.airport-table td:nth-child(5) {
-  width: 6%;
-}
-
-.airport-table th:nth-child(6),
-.airport-table td:nth-child(6) {
-  width: 8%;
-}
-
-.airport-table th:nth-child(7),
-.airport-table td:nth-child(7) {
-  width: 12%;
-}
-
-.airport-table th:nth-child(8),
-.airport-table td:nth-child(8) {
-  width: 13%;
-}
-
-/* ================= ACTION BUTTONS ================= */
-
-.edit-btn {
-  background: #ffc107;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  margin-right: 6px;
-}
-
-.delete-btn {
-  background: #dc3545;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: white;
-  cursor: pointer;
-}
-
-.view-btn {
-  height: 30px;
-  padding: 0 12px;
-  border-radius: 6px;
-  border: none;
-  background: #1e88e5;
-  color: white;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-/* Scroll Safety */
-
-.dashboard-content {
-  overflow-x: auto;
-}
-
-/* Disabled Update & Delete Button Styling */
-.edit-btn:disabled,
-.delete-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-
-
-/* ===== Professional Survey Modal ===== */
-
-.survey-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 20, 50, 0.55);
-  backdrop-filter: blur(3px);
-  display: flex;
+.airport-status-pill {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  z-index: 999;
+  min-width: 78px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.survey-modal-box {
-  width: 420px;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 25px 28px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-  animation: modalFade 0.2s ease-in-out;
+.airport-status-pill.active {
+  background: #e6f8ee;
+  color: #126a3a;
 }
 
-@keyframes modalFade {
-  from {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+.airport-status-pill.inactive {
+  background: #fff2e8;
+  color: #a14a08;
 }
 
-/* Title */
-.survey-modal-box h3 {
-  margin-bottom: 18px;
-  font-size: 18px;
+.table-action-btn {
+  border: none;
+  border-radius: 10px;
+  height: 36px;
+  padding: 0 12px;
+  cursor: pointer;
   font-weight: 600;
-  color: #0b1853;
-}
-
-/* Each survey row */
-.survey-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f4f6fb;
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  transition: 0.2s;
-}
-
-.survey-item:hover {
-  background: #e9edf7;
-}
-
-/* Stop button */
-.stop-btn {
-  background: #dc3545;
-  border: none;
-  color: white;
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.stop-btn:hover {
-  background: #b02a37;
-}
-
-/* Bottom buttons */
-.stop-all-btn {
-  background: #0b1853;
-  color: white;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
   margin-right: 8px;
-  transition: 0.2s;
 }
 
-.stop-all-btn:hover {
-  background: #132b7a;
+.table-action-btn.edit {
+  background: #edf3fb;
+  color: #08163f;
 }
 
-.close-btn {
-  background: #6c757d;
-  color: white;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
+.table-action-btn.delete {
+  background: #ffe8ea;
+  color: #a61d2a;
 }
 
-.close-btn:hover {
-  background: #5a6268;
+@media (max-width: 1200px) {
+  .airport-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .airport-map-panel {
+    min-height: 0;
+  }
 }
 
-/* Bottom button row alignment */
-.survey-modal-box button {
-  margin-top: 10px;
+@media (max-width: 900px) {
+  .airport-page-header {
+    flex-direction: column;
+  }
+
+  .airport-search-input {
+    min-width: 220px;
+    width: 100%;
+  }
+
+  .airport-field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .airport-status-field {
+    grid-column: span 1;
+  }
+
+  .airport-map-summary,
+  .airport-form-footer {
+    grid-template-columns: 1fr;
+  }
 }
-
-
