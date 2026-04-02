@@ -183,7 +183,7 @@ const SurveyQuestions = () => {
             <th>Question</th>
             {/* <th>Status</th> */}
             {/* <th>Live In</th> */}
-            <th>Actions</th>
+            {/* <th>Actions</th> */}
           </tr>
         </thead>
 
@@ -231,7 +231,7 @@ const SurveyQuestions = () => {
                   )}
                 </td> */}
 
-                <td>
+                {/* <td>
                   <button
                     className="edit-btn"
                     onClick={() => handleUpdate(item)}
@@ -250,7 +250,7 @@ const SurveyQuestions = () => {
                   >
                     Delete
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))
           )}

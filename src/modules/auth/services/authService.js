@@ -11,7 +11,9 @@ const authService = {
 
   // Register user
   register: async (userData) => {
-    const response = await axios.post(`${API_BASE_URL}/auth/register`, userData);
+    const response = await axios.post(`${API_BASE_URL}/agents/register`, userData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   },
 

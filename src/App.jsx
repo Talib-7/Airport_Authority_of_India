@@ -1,8 +1,8 @@
 import LoginPage from "./modules/auth/pages/LoginPage";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 //for Registration page
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import RegisterPage from "./modules/auth/pages/RegisterPage";
 import ForgotPasswordPage from "./modules/auth/pages/ForgotPasswordPage";
 import Dashboard from "./modules/dashboard/pages/Dashboard";
@@ -15,18 +15,49 @@ import CreateUser from "./modules/createUser/CreateUser";
 import AgentHistory from "./modules/agentHistory/AgentHistory";
 import GeneralQuestions from "./modules/generalQuestions/GeneralQuestions";
 import SurveyManagement from "./modules/surveyManagement/SurveyManagement";
-import CreateFeedback from "./modules/createFeedback/CreateFeedback";
-import FeedbackForm from "./modules/feedbackForm/FeedbackForm";
+// import CreateFeedback from "./modules/createFeedback/CreateFeedback";
+// import FeedbackForm from "./modules/feedbackForm/FeedbackForm";
 import SurveyHistory from "./modules/surveyHistory/SurveyHistory";
 
+const ADMIN_ROLE_ID = 1;
+const AGENT_ROLE_ID = 2;
+
+const getCurrentUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch (_error) {
+    return null;
+  }
+};
+
 function App() {
-  // const navigate = useNavigate();
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     navigate("/");
-  //   }
-  // }, [navigate]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const token = localStorage.getItem("token");
+  const currentUser = getCurrentUser();
+  const currentRoleId = currentUser?.roleId;
+
+  const renderProtectedRoute = (element, allowedRoles = [ADMIN_ROLE_ID]) => {
+    if (!token) {
+      return <Navigate to="/login" replace />;
+    }
+
+    if (!currentRoleId || !allowedRoles.includes(currentRoleId)) {
+      return <Navigate to="/dashboard" replace />;
+    }
+
+    return element;
+  };
+  
+  useEffect(() => {
+    // Public routes that don't need authentication
+    const publicRoutes = ["/", "/login", "/register", "/forgot"];
+    const isPublicRoute = publicRoutes.includes(location.pathname);
+    
+    if (!token && !isPublicRoute) {
+      navigate("/");
+    }
+  }, [navigate, location.pathname]);
   return (
     
     <Routes>
@@ -35,19 +66,20 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot" element={<ForgotPasswordPage/>}/>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/survey-questions" element={<SurveyQuestions />} />
-      <Route path="/survey-running" element={<SurveyRunning />} />
-      <Route path="/airports" element={<Airports />} />
-      <Route path="/registered-agents" element={<RegisteredAgents />} />
-      <Route path="/approved-agents" element={<ApprovedAgents />} />
-      <Route path="/create-user" element={<CreateUser />} />  
-      <Route path="/agent-history" element={<AgentHistory />} />
-      <Route path="/general-questions" element={<GeneralQuestions />} />  
-      <Route path="/survey-management" element={<SurveyManagement />} />
-      <Route path="/create-feedback" element={<CreateFeedback />} />
-      <Route path="/feedback-form" element={<FeedbackForm />} />
-      <Route path="/survey-history" element={<SurveyHistory />}/>
+      <Route path="/dashboard" element={renderProtectedRoute(<Dashboard />, [ADMIN_ROLE_ID, AGENT_ROLE_ID])} />
+      <Route path="/survey-questions" element={renderProtectedRoute(<SurveyQuestions />)} />
+      <Route path="/survey-running" element={renderProtectedRoute(<SurveyRunning />, [ADMIN_ROLE_ID, AGENT_ROLE_ID])} />
+      <Route path="/airports" element={renderProtectedRoute(<Airports />)} />
+      <Route path="/registered-agents" element={renderProtectedRoute(<RegisteredAgents />)} />
+      <Route path="/approved-agents" element={renderProtectedRoute(<ApprovedAgents />)} />
+      <Route path="/create-user" element={renderProtectedRoute(<CreateUser />)} />  
+      <Route path="/agent-history" element={renderProtectedRoute(<AgentHistory />)} />
+      <Route path="/general-questions" element={renderProtectedRoute(<GeneralQuestions />)} />  
+      <Route path="/survey-management" element={renderProtectedRoute(<SurveyManagement />)} />
+      {/* <Route path="/create-feedback" element={<CreateFeedback />} /> */}
+      {/* <Route path="/feedback-form" element={<FeedbackForm />} /> */}
+      <Route path="/survey-history" element={renderProtectedRoute(<SurveyHistory />)} />
+      <Route path="*" element={<Navigate to={token ? "/dashboard" : "/login"} replace />} />
 
     </Routes>
 
