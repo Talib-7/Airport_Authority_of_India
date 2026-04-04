@@ -11,7 +11,7 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-const MAX_AREA_KM2 = 30;
+const MAX_AREA_KM2 = 500;
 const INDIA_CENTER = [20.5937, 78.9629];
 
 const defaultIcon = new L.Icon({
@@ -207,7 +207,6 @@ const AirportMapEditor = ({ value, onChange }) => {
     setVertices([]);
     setIsClosed(false);
     setFeedback('');
-    setCenter(INDIA_CENTER);
     onChange({
       ...value,
       location: null,
@@ -215,9 +214,7 @@ const AirportMapEditor = ({ value, onChange }) => {
     });
   };
 
-  const handleSearch = async (event) => {
-    event.preventDefault();
-
+  const handleSearch = async () => {
     if (!searchQuery.trim()) {
       return;
     }
@@ -262,17 +259,23 @@ const AirportMapEditor = ({ value, onChange }) => {
       />
 
       <div className="airport-map-toolbar">
-        <form className="airport-map-search" onSubmit={handleSearch}>
+        <div className="airport-map-search">
           <input
             type="text"
             placeholder="Search city, terminal, or landmark"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                handleSearch();
+              }
+            }}
           />
-          <button type="submit" disabled={searching}>
+          <button type="button" onClick={handleSearch} disabled={searching}>
             {searching ? 'Searching...' : 'Search'}
           </button>
-        </form>
+        </div>
 
         <div className="airport-map-hint">
           Click to place points around the airport region. Close the shape when finished.

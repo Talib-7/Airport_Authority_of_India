@@ -16,7 +16,7 @@ import AgentHistory from "./modules/agentHistory/AgentHistory";
 import GeneralQuestions from "./modules/generalQuestions/GeneralQuestions";
 import SurveyManagement from "./modules/surveyManagement/SurveyManagement";
 // import CreateFeedback from "./modules/createFeedback/CreateFeedback";
-// import FeedbackForm from "./modules/feedbackForm/FeedbackForm";
+import FeedbackForm from "./modules/feedbackForm/FeedbackForm";
 import SurveyHistory from "./modules/surveyHistory/SurveyHistory";
 import airportsService from "./modules/airports/services/airportsService";
 
@@ -160,6 +160,7 @@ function App() {
                 Retry location check
               </button>
             </div>
+    
           </div>
         );
       }
@@ -195,7 +196,8 @@ function App() {
         <Route path="/general-questions" element={renderProtectedRoute(<GeneralQuestions />)} />  
         <Route path="/survey-management" element={renderProtectedRoute(<SurveyManagement />)} />
         {/* <Route path="/create-feedback" element={<CreateFeedback />} /> */}
-        {/* <Route path="/feedback-form" element={<FeedbackForm />} /> */}
+        <Route path="/feedback-form/:surveyId" element={<FeedbackForm />} />
+        <Route path="/feedback-form" element={<FeedbackForm />} />
         <Route path="/survey-history" element={renderProtectedRoute(<SurveyHistory />)} />
         <Route path="*" element={<Navigate to={token ? "/dashboard" : "/login"} replace />} />
       </Routes>

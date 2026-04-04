@@ -15,6 +15,14 @@ const surveyManagementService = {
     return response.data;
   },
 
+  findRunning: async () => {
+    const response = await axios.get(`${API_BASE_URL}/surveys/running`, {
+      headers: getAuthHeader(),
+    });
+
+    return response.data;
+  },
+
   create: async (payload) => {
     const response = await axios.post(`${API_BASE_URL}/surveys`, payload, {
       headers: getAuthHeader(),

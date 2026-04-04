@@ -1,98 +1,179 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Layout from "../layout/Layout";
+import feedbackFormService from "./feedbackFormService";
 import "./feedbackForm.css";
 
+const createInitialTravelDetails = () => ({
+  flightNumber: "",
+  departureDate: "",
+  departureTime: "",
+  destination: "",
+});
+
 const FeedbackForm = () => {
+  const { surveyId } = useParams();
 
   const [survey, setSurvey] = useState(null);
-
   const [airportInfo, setAirportInfo] = useState({
     name: "",
-    code: ""
+    code: "",
   });
-
-  const [travelDetails, setTravelDetails] = useState({
-    flightNumber: "",
-    departureDate: "",
-    departureTime: "",
-    destination: ""
-  });
-
+  const [travelDetails, setTravelDetails] = useState(createInitialTravelDetails());
   const [reason, setReason] = useState("");
   const [aircraftClass, setAircraftClass] = useState("");
   const [returnTrips, setReturnTrips] = useState("");
-
   const [answers, setAnswers] = useState({});
   const [generalAnswers, setGeneralAnswers] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
+    let cancelled = false;
 
-    const surveys =
-      JSON.parse(localStorage.getItem("surveys")) || [];
+    const loadSurvey = async (latitude, longitude) => {
+      try {
+        const response = await feedbackFormService.findRunningSurvey(
+          Number(surveyId),
+          latitude,
+          longitude,
+        );
 
-    const liveSurvey = surveys.find(s => s.isLive);
+        if (cancelled) {
+          return;
+        }
 
-    if (liveSurvey) setSurvey(liveSurvey);
+        setSurvey(response.survey);
+        setAirportInfo({
+          name: response.airport.airportName,
+          code: response.airport.airportCode,
+        });
+        setUserLocation({ latitude, longitude });
+      } catch (requestError) {
+        if (cancelled) {
+          return;
+        }
 
-    // ✅ AUTO FILL AIRPORT
-    setAirportInfo({
-      name: "Indira Gandhi International Airport",
-      code: "DEL"
-    });
+        setError(
+          requestError.response?.data?.message ||
+            "Unable to load the running survey for your current location.",
+        );
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
 
-  }, []);
+    if (!surveyId) {
+      setError("Missing survey id in the survey link.");
+      setLoading(false);
+      return undefined;
+    }
+
+    if (!navigator.geolocation) {
+      setError("Location services are not available in this browser.");
+      setLoading(false);
+      return undefined;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        loadSurvey(position.coords.latitude, position.coords.longitude);
+      },
+      () => {
+        if (!cancelled) {
+          setError("Location access is required to open the survey.");
+          setLoading(false);
+        }
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [surveyId]);
 
   const handleRating = (question, rating) => {
-
-    setAnswers({
-      ...answers,
-      [question.surveyQuestionText]: rating
-    });
-
+    setAnswers((currentAnswers) => ({
+      ...currentAnswers,
+      [question.surveyQuestionId]: rating,
+    }));
   };
 
   const handleGeneralAnswer = (question, value) => {
-
-    setGeneralAnswers({
-      ...generalAnswers,
-      [question.question]: value
-    });
-
+    setGeneralAnswers((currentAnswers) => ({
+      ...currentAnswers,
+      [question.id]: value,
+    }));
   };
 
-  const submitFeedback = () => {
+  const submitFeedback = async () => {
+    if (!survey || !userLocation) {
+      return;
+    }
 
-    const feedbacks =
-      JSON.parse(localStorage.getItem("feedbackResponses")) || [];
+    setSubmitting(true);
+    setError("");
+    setSuccessMessage("");
 
-    const newFeedback = {
+    try {
+      await feedbackFormService.submitFeedback(survey.id, {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        travelDetails,
+        reason,
+        aircraftClass,
+        returnTrips,
+        answers,
+        generalAnswers,
+      });
 
-      surveyId: survey.id,
-      travelDetails,
-      reason,
-      aircraftClass,
-      returnTrips,
-      answers,
-      generalAnswers,
-      submittedAt: new Date().toLocaleString()
+      setSuccessMessage("Feedback submitted successfully.");
+      setTravelDetails(createInitialTravelDetails());
+      setReason("");
+      setAircraftClass("");
+      setReturnTrips("");
+      setAnswers({});
+      setGeneralAnswers({});
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          "Unable to submit feedback. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-    };
-
-    feedbacks.push(newFeedback);
-
-    localStorage.setItem(
-      "feedbackResponses",
-      JSON.stringify(feedbacks)
+  if (loading) {
+    return (
+      <Layout>
+        <h2 style={{ textAlign: "center", marginTop: "50px" }}>
+          Loading running survey...
+        </h2>
+      </Layout>
     );
+  }
 
-    alert("Feedback Submitted Successfully");
-
-  };
+  if (error && !survey) {
+    return (
+      <Layout>
+        <h2 style={{ textAlign: "center", marginTop: "50px", color: "#b42318" }}>
+          {error}
+        </h2>
+      </Layout>
+    );
+  }
 
   if (!survey) {
     return (
       <Layout>
-        <h2 style={{textAlign:"center", marginTop:"50px"}}>
+        <h2 style={{ textAlign: "center", marginTop: "50px" }}>
           No Live Survey Available
         </h2>
       </Layout>
@@ -100,138 +181,123 @@ const FeedbackForm = () => {
   }
 
   return (
-
     <Layout>
-
       <div className="survey-container">
+        <h2 className="survey-title">AAI CUSTOMER SATISFACTION SURVEY</h2>
 
-        <h2 className="survey-title">
-          AAI CUSTOMER SATISFACTION SURVEY
-        </h2>
+        {error ? (
+          <div style={{ marginBottom: "12px", color: "#b42318", fontWeight: 600 }}>
+            {error}
+          </div>
+        ) : null}
 
-        {/* ✅ AIRPORT AUTO FILLED (TOP) */}
+        {successMessage ? (
+          <div style={{ marginBottom: "12px", color: "#067647", fontWeight: 600 }}>
+            {successMessage}
+          </div>
+        ) : null}
+
         <div className="airport-info">
-
           <div className="airport-field">
             <label>Airport Name</label>
-            <input
-              value={airportInfo.name}
-              readOnly
-            />
+            <input value={airportInfo.name} readOnly />
           </div>
 
           <div className="airport-field">
             <label>Airport Code</label>
-            <input
-              value={airportInfo.code}
-              readOnly
-            />
+            <input value={airportInfo.code} readOnly />
           </div>
-
         </div>
 
-        {/* MESSAGE */}
-
         <p className="dear-text">
-          <strong>Dear Passenger,</strong><br/>
-          Welcome! We hope you are having a pleasant experience at the airport.  
-          Your feedback is extremely valuable to us and helps us improve our facilities and services.  
-          We kindly request you to take a few moments to share your experience by completing this survey.  
-          You may submit your response online, through an agent, or by scanning the QR code available at the airport.  
+          <strong>Dear Passenger,</strong>
+          <br />
+          Welcome! We hope you are having a pleasant experience at the airport.
+          Your feedback is extremely valuable to us and helps us improve our facilities and services.
+          We kindly request you to take a few moments to share your experience by completing this survey.
+          You may submit your response online, through an agent, or by scanning the QR code available at the airport.
           Thank you for your time and support.
         </p>
-
-        {/* TRAVEL DETAILS */}
 
         <h3 className="section-title">TRAVEL DETAILS</h3>
 
         <div className="travel-grid">
-
           <input
             placeholder="Flight Number"
-            onChange={(e)=>setTravelDetails({...travelDetails,flightNumber:e.target.value})}
+            value={travelDetails.flightNumber}
+            onChange={(event) => setTravelDetails({ ...travelDetails, flightNumber: event.target.value })}
           />
 
           <input
             type="date"
-            onChange={(e)=>setTravelDetails({...travelDetails,departureDate:e.target.value})}
+            value={travelDetails.departureDate}
+            onChange={(event) => setTravelDetails({ ...travelDetails, departureDate: event.target.value })}
           />
 
           <input
             type="time"
-            onChange={(e)=>setTravelDetails({...travelDetails,departureTime:e.target.value})}
+            value={travelDetails.departureTime}
+            onChange={(event) => setTravelDetails({ ...travelDetails, departureTime: event.target.value })}
           />
 
           <input
             placeholder="Destination"
-            onChange={(e)=>setTravelDetails({...travelDetails,destination:e.target.value})}
+            value={travelDetails.destination}
+            onChange={(event) => setTravelDetails({ ...travelDetails, destination: event.target.value })}
           />
-
         </div>
-
-
-        {/* MAIN REASON */}
 
         <div className="radio-section">
           <p>Main Reason for Trip</p>
 
-          {["Business","Leisure","Other"].map((r,i)=>(
-            <label key={i}>
+          {["Business", "Leisure", "Other"].map((value, index) => (
+            <label key={index}>
               <input
                 type="radio"
                 name="reason"
-                onChange={()=>setReason(r)}
+                checked={reason === value}
+                onChange={() => setReason(value)}
               />
-              {r}
+              {value}
             </label>
           ))}
         </div>
-
-
-        {/* CLASS */}
 
         <div className="radio-section">
           <p>Aircraft Class</p>
 
-          {["First Class","Business","Economy"].map((r,i)=>(
-            <label key={i}>
+          {["First Class", "Business", "Economy"].map((value, index) => (
+            <label key={index}>
               <input
                 type="radio"
                 name="class"
-                onChange={()=>setAircraftClass(r)}
+                checked={aircraftClass === value}
+                onChange={() => setAircraftClass(value)}
               />
-              {r}
+              {value}
             </label>
           ))}
         </div>
-
-
-        {/* RETURN TRIPS */}
 
         <div className="radio-section">
           <p>Return Trips in Last 12 Months</p>
 
-          {["1-2","3-5","6-10","11-20","21+"].map((r,i)=>(
-            <label key={i}>
+          {["1-2", "3-5", "6-10", "11-20", "21+"].map((value, index) => (
+            <label key={index}>
               <input
                 type="radio"
                 name="trips"
-                onChange={()=>setReturnTrips(r)}
+                checked={returnTrips === value}
+                onChange={() => setReturnTrips(value)}
               />
-              {r}
+              {value}
             </label>
           ))}
         </div>
 
-
-        {/* SURVEY TABLE */}
-
-        <h3 className="section-title">
-          Airport Customer Satisfaction Questionnaire
-        </h3>
+        <h3 className="section-title">Airport Customer Satisfaction Questionnaire</h3>
 
         <table className="survey-table">
-
           <thead>
             <tr>
               <th>Sl No</th>
@@ -245,68 +311,51 @@ const FeedbackForm = () => {
           </thead>
 
           <tbody>
+            {(survey.surveyQuestions || []).map((question, index) => (
+              <tr key={question.surveyQuestionId || index}>
+                <td>{index + 1}</td>
 
-            {survey.surveyQuestions.map((q,index)=>(
+                <td className="left">{question.surveyQuestionText}</td>
 
-              <tr key={index}>
-
-                <td>{index+1}</td>
-
-                <td className="left">
-                  {q.surveyQuestionText}
-                </td>
-
-                {[5,4,3,2,1].map(rating=>(
+                {[5, 4, 3, 2, 1].map((rating) => (
                   <td key={rating}>
                     <input
                       type="radio"
-                      name={`q${index}`}
-                      onChange={()=>handleRating(q,rating)}
+                      name={`q${question.surveyQuestionId || index}`}
+                      checked={answers[question.surveyQuestionId] === rating}
+                      onChange={() => handleRating(question, rating)}
                     />
                   </td>
                 ))}
-
               </tr>
-
             ))}
-
           </tbody>
-
         </table>
-
-
-        {/* GENERAL QUESTIONS */}
 
         <h3 className="section-title">Additional Comments</h3>
 
-        {survey.generalQuestions.map((q,index)=>(
-
-          <div key={index} className="general-q">
-
-            <label>{q.question}</label>
+        {(survey.generalQuestions || []).map((question, index) => (
+          <div key={question.id || index} className="general-q">
+            <label>{question.question || question.questionText}</label>
 
             <textarea
-              onChange={(e)=>handleGeneralAnswer(q,e.target.value)}
+              value={generalAnswers[question.id] || ""}
+              onChange={(event) => handleGeneralAnswer(question, event.target.value)}
             />
-
           </div>
-
         ))}
-
-
-        {/* SUBMIT */}
 
         <div className="submit-wrap">
           <button
             className="submit-btn"
+            type="button"
+            disabled={submitting}
             onClick={submitFeedback}
           >
-            SUBMIT
+            {submitting ? "SUBMITTING..." : "SUBMIT"}
           </button>
         </div>
-
       </div>
-
     </Layout>
   );
 };
