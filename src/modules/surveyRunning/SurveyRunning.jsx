@@ -23,7 +23,10 @@ const SurveyRunning = () => {
   const [surveyList, setSurveyList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeAirports, setActiveAirports] = useState(null);
+  const [airportModalSurvey, setAirportModalSurvey] = useState(null);
+  const [qrModalData, setQrModalData] = useState(null);
+  const [qrLoadingSurveyId, setQrLoadingSurveyId] = useState(null);
+  const [copyMessage, setCopyMessage] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -53,17 +56,7 @@ const SurveyRunning = () => {
     };
   }, []);
 
-  const runningSurveys = surveyList.filter((survey) => {
-    if (!isAgent) {
-      return true;
-    }
-
-    if (!assignedAirportId) {
-      return false;
-    }
-
-    return (survey.airports || []).some((airport) => airport.airportId === assignedAirportId);
-  });
+  const runningSurveys = surveyList;
 
   const openSurveyForm = (surveyId) => {
     if (!surveyId) {
@@ -71,6 +64,58 @@ const SurveyRunning = () => {
     }
 
     navigate(`/feedback-form/${surveyId}`);
+  };
+
+  const openAirportModal = (survey) => {
+    const visibleAirports = survey.airports || [];
+
+    setAirportModalSurvey({
+      surveyName: survey.surveyName,
+      airports: visibleAirports,
+    });
+  };
+
+  const openQrModal = async (survey) => {
+    if (!survey?.surveyId) {
+      return;
+    }
+
+    try {
+      setQrLoadingSurveyId(survey.surveyId);
+      setCopyMessage("");
+      const qrData = await surveyManagementService.generateQRCode(survey.surveyId);
+      setQrModalData({
+        surveyName: survey.surveyName,
+        surveyId: survey.surveyId,
+        qrCode: qrData.qrCode,
+        url: qrData.url,
+      });
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Unable to generate QR code");
+    } finally {
+      setQrLoadingSurveyId(null);
+    }
+  };
+
+  const copyQrUrl = async () => {
+    if (!qrModalData?.url) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(qrModalData.url);
+      setCopyMessage("Link copied");
+    } catch (_error) {
+      setCopyMessage("Copy failed");
+    }
+  };
+
+  const isAssignedAirportSurvey = (survey) => {
+    if (!isAgent || !assignedAirportId) {
+      return false;
+    }
+
+    return (survey.airports || []).some((airport) => airport.airportId === assignedAirportId);
   };
 
   return (
@@ -111,6 +156,9 @@ const SurveyRunning = () => {
                     >
                       {item.surveyName}
                     </button>
+                    {isAssignedAirportSurvey(item) ? (
+                      <span className="survey-assigned-badge">Assigned Airport</span>
+                    ) : null}
                   </td>
                   <td>{item.startDate || "-"}</td>
                   <td>{item.endDate || "-"}</td>
@@ -125,16 +173,20 @@ const SurveyRunning = () => {
                       Open Form
                     </button>
                     <button
-                      className="view-btn"
-                      onClick={() => {
-                        const visibleAirports = isAgent
-                          ? (item.airports || []).filter((airport) => airport.airportId === assignedAirportId)
-                          : (item.airports || []);
-                        setActiveAirports(visibleAirports);
-                      }}
+                      className="view-btn qr-btn"
+                      onClick={() => openQrModal(item)}
+                      disabled={qrLoadingSurveyId === item.surveyId}
                     >
-                      View Airports
+                      {qrLoadingSurveyId === item.surveyId ? "Generating..." : "Generate QR"}
                     </button>
+                    {!isAgent ? (
+                      <button
+                        className="view-btn"
+                        onClick={() => openAirportModal(item)}
+                      >
+                        View Airports
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               ))
@@ -147,23 +199,58 @@ const SurveyRunning = () => {
         </table>
       )}
 
-      {activeAirports && (
-        <div className="survey-modal">
-          <div className="survey-modal-box">
-            <h3>Live Airports</h3>
+      {airportModalSurvey && (
+        <div className="survey-modal" onClick={() => setAirportModalSurvey(null)}>
+          <div className="survey-modal-box" onClick={(event) => event.stopPropagation()}>
+            <div className="survey-modal-header">
+              <h3>Live Airports</h3>
+              <button
+                className="close-btn"
+                onClick={() => setAirportModalSurvey(null)}
+              >
+                Close
+              </button>
+            </div>
 
-            {activeAirports.map((airport, index) => (
-              <div key={index} className="survey-item">
-                • {airport.airportName}
-              </div>
-            ))}
+            <p className="survey-modal-subtitle">{airportModalSurvey.surveyName}</p>
 
-            <button
-              className="close-btn"
-              onClick={() => setActiveAirports(null)}
-            >
-              Close
-            </button>
+            {airportModalSurvey.airports.length > 0 ? (
+              <ul className="survey-airport-list">
+                {airportModalSurvey.airports.map((airport) => (
+                  <li key={airport.airportId} className="survey-item">
+                    {airport.airportName}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="survey-empty-airports">No airports available for this survey.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {qrModalData && (
+        <div className="survey-modal" onClick={() => setQrModalData(null)}>
+          <div className="survey-modal-box qr-modal-box" onClick={(event) => event.stopPropagation()}>
+            <div className="survey-modal-header">
+              <h3>Survey QR Code</h3>
+              <button className="close-btn" onClick={() => setQrModalData(null)}>
+                Close
+              </button>
+            </div>
+
+            <p className="survey-modal-subtitle">{qrModalData.surveyName}</p>
+
+            <div className="qr-preview-wrap">
+              <img src={qrModalData.qrCode} alt="Survey QR" className="qr-preview" />
+            </div>
+
+            <div className="qr-url-wrap">
+              <input value={qrModalData.url} readOnly className="qr-url-input" />
+              <button className="view-btn qr-copy-btn" onClick={copyQrUrl}>Copy Link</button>
+            </div>
+
+            {copyMessage ? <p className="qr-copy-message">{copyMessage}</p> : null}
           </div>
         </div>
       )}

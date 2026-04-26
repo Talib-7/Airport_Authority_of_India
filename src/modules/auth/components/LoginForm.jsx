@@ -41,7 +41,7 @@ const LoginForm = () => {
       )}
 
       <div className="field">
-        <label>Username</label>
+        <label>Email</label>
         <input 
           type="email" 
           placeholder="Enter your E-mail"

@@ -13,6 +13,26 @@ const GeneralQuestions = () => {
   const [newOption, setNewOption] = useState("");
   const [optionList, setOptionList] = useState([]);
   const [questionType, setQuestionType] = useState("RADIO");
+  const [expandedQuestionIds, setExpandedQuestionIds] = useState([]);
+
+  const getQuestionKey = (item, index) => String(item?.id ?? index);
+
+  const getQuestionOptions = (item) => (Array.isArray(item?.options) ? item.options : []);
+
+  const hasOptions = (item) => getQuestionOptions(item).length > 0;
+
+  const isQuestionExpanded = (questionKey) => expandedQuestionIds.includes(questionKey);
+
+  const toggleQuestionOptions = (questionKey) => {
+    setExpandedQuestionIds((currentIds) =>
+      currentIds.includes(questionKey)
+        ? currentIds.filter((id) => id !== questionKey)
+        : [...currentIds, questionKey],
+    );
+  };
+
+  const getOptionLabel = (option, optionIndex) =>
+    option?.optionLabel || option?.optionValue || `Option ${optionIndex + 1}`;
 
   const fetchQuestions = async () => {
     setLoading(true);
@@ -277,24 +297,62 @@ const GeneralQuestions = () => {
             <th>S.No</th>
             <th>Question</th>
             <th>Type</th>
+            <th>Options</th>
           </tr>
         </thead>
 
         <tbody>
           {questionsList.length > 0 ? (
-            questionsList.map((item, index) => (
-              <tr key={item.id}>
-                <td>{index + 1}</td>
-                <td>
-                  <strong>{item.questionText}</strong>
-                </td>
+            questionsList.map((item, index) => {
+              const questionKey = getQuestionKey(item, index);
+              const itemOptions = getQuestionOptions(item);
+              const canExpand = hasOptions(item);
+              const expanded = isQuestionExpanded(questionKey);
 
-                <td>{item.questionType}</td>
-              </tr>
-            ))
+              return (
+                <tr key={item.id || questionKey}>
+                  <td>{index + 1}</td>
+                  <td>
+                    <strong>{item.questionText}</strong>
+                  </td>
+
+                  <td>{item.questionType}</td>
+                  <td>
+                    {canExpand ? (
+                      <div className="options-accordion">
+                        <button
+                          type="button"
+                          className="options-toggle-btn"
+                          onClick={() => toggleQuestionOptions(questionKey)}
+                          aria-expanded={expanded}
+                          aria-label={`Toggle options for question ${index + 1}`}
+                        >
+                          <span className={`options-toggle-icon ${expanded ? "expanded" : ""}`}>
+                            +
+                          </span>
+                          <span className="options-toggle-text">View options ({itemOptions.length})</span>
+                        </button>
+
+                        {expanded ? (
+                          <div className="options-panel">
+                            {itemOptions.map((option, optionIndex) => (
+                              <span key={option.id || `${questionKey}-${optionIndex}`} className="option-chip">
+                                {getOptionLabel(option, optionIndex)}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <span className="no-options">-</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
-              <td colSpan="3" className="no-record">
+              <td colSpan="4" className="no-record">
                 No Record Found
               </td>
             </tr>

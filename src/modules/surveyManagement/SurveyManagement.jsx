@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import generalQuestionsService from "../generalQuestions/services/generalQuestionsService";
 import surveyQuestionsService from "../surveyQuestions/services/surveyQuestionsService";
@@ -15,6 +16,9 @@ const getErrorMessage = (error, fallbackMessage) => {
 
 
 const SurveyManagement = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [surveys, setSurveys] = useState([]);
   const [generalQuestions, setGeneralQuestions] = useState([]);
   const [surveyQuestions, setSurveyQuestions] = useState([]);
@@ -44,7 +48,7 @@ const SurveyManagement = () => {
 
     try {
       const [surveysData, generalData, surveyData, airportsData] = await Promise.all([
-        surveyManagementService.findAll(),
+        surveyManagementService.findActive(),
         generalQuestionsService.findAll(),
         surveyQuestionsService.findAll(),
         surveyManagementService.fetchAirports(),
@@ -64,6 +68,38 @@ const SurveyManagement = () => {
   useEffect(() => {
     loadSurveyManagementData();
   }, []);
+
+  useEffect(() => {
+    const templateSurvey = location.state?.templateSurvey;
+
+    if (!templateSurvey) {
+      return;
+    }
+
+    const normalizedSurveyQuestionIds = Array.from(
+      new Set(
+        (templateSurvey.surveyQuestionIds || [])
+          .map((id) => Number(id))
+          .filter((id) => Number.isInteger(id) && id > 0),
+      ),
+    );
+    const normalizedGeneralQuestionIds = Array.from(
+      new Set(
+        (templateSurvey.generalQuestionIds || [])
+          .map((id) => Number(id))
+          .filter((id) => Number.isInteger(id) && id > 0),
+      ),
+    );
+
+    setEditingSurveyId(null);
+    setSurveyName(`${templateSurvey.surveyName || ""} (Copy)`.trim());
+    setSelectedSurveyIds(normalizedSurveyQuestionIds);
+    setSelectedGeneralIds(normalizedGeneralQuestionIds);
+    setActiveTab("survey");
+    setShowModal(true);
+
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.pathname, location.state, navigate]);
 
   const resetSurveyForm = () => {
     setEditingSurveyId(null);
@@ -219,7 +255,7 @@ const SurveyManagement = () => {
       return Number(right.surveyId) - Number(left.surveyId);
     }
 
-    const statusOrder = { LIVE: 0, DRAFT: 1, COMPLETED: 2 };
+    const statusOrder = { LIVE: 0, DRAFT: 1 };
     return statusOrder[left.status] - statusOrder[right.status];
   });
 

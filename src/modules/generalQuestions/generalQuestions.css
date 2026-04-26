@@ -48,13 +48,18 @@
 
 .data-table th:nth-child(2),
 .data-table td:nth-child(2) {
-  width: 60%;
+  width: 45%;
 }
 
 .data-table th:nth-child(3),
 .data-table td:nth-child(3) {
   width: 120px;
   text-align: center;
+}
+
+.data-table th:nth-child(4),
+.data-table td:nth-child(4) {
+  width: 35%;
 }
 
 /* BUTTONS */
@@ -167,4 +172,74 @@
   padding: 25px 0;
   color: #6c757d;
   font-weight: 500;
+}
+
+.options-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.options-toggle-btn {
+  width: fit-content;
+  border: 1px solid #cfd8e3;
+  background: #f7f9fc;
+  color: #0b1f3a;
+  border-radius: 6px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.options-toggle-btn:hover {
+  background: #eef3fb;
+}
+
+.options-toggle-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #9aabc4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.options-toggle-icon.expanded {
+  background: #0b1f3a;
+  color: #fff;
+}
+
+.options-toggle-text {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.options-panel {
+  background: #f7f9fc;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.option-chip {
+  background: #e8eef9;
+  color: #102a52;
+  border: 1px solid #c7d6ef;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.no-options {
+  color: #7a8494;
 }

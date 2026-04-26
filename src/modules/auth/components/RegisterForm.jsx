@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import agentService from "../services/agentService";
+import airportsService from "../../airports/services/airportsService";
 
 const RegisterForm = () => {
 
@@ -14,6 +15,25 @@ const RegisterForm = () => {
     airport: "",
     uploadId: null
   });
+  const [airports, setAirports] = useState([]);
+  const [loadingAirports, setLoadingAirports] = useState(false);
+
+  useEffect(() => {
+    const loadAirports = async () => {
+      setLoadingAirports(true);
+
+      try {
+        const airportsResponse = await airportsService.findPublicForRegistration();
+        setAirports(Array.isArray(airportsResponse) ? airportsResponse : []);
+      } catch (_error) {
+        setAirports([]);
+      } finally {
+        setLoadingAirports(false);
+      }
+    };
+
+    loadAirports();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -124,11 +144,16 @@ const RegisterForm = () => {
           value={formData.airport}
           onChange={handleChange}
           required
+          disabled={loadingAirports}
         >
-          <option value="">Select Airport</option>
-          <option>Delhi (DEL)</option>
-          <option>Mumbai (BOM)</option>
-          <option>Bengaluru (BLR)</option>
+          <option value="">
+            {loadingAirports ? "Loading airports..." : "Select Airport"}
+          </option>
+          {airports.map((airport) => (
+            <option key={airport.airportId} value={airport.airportName}>
+              {airport.airportName} ({airport.airportCode})
+            </option>
+          ))}
         </select>
       </div>
 

@@ -9,6 +9,12 @@ const getAuthHeader = () => {
 };
 
 const airportsService = {
+  findPublicForRegistration: async () => {
+    const response = await axios.get(`${API_BASE_URL}/public/airports`);
+
+    return response.data;
+  },
+
   findAll: async (region) => {
     const response = await axios.get(`${API_BASE_URL}/airports`, {
       params: region ? { region } : undefined,

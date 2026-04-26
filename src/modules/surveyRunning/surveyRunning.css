@@ -86,3 +86,116 @@
   font-weight: 500;
   color: #667085;
 }
+
+.survey-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 22, 55, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1100;
+}
+
+.survey-modal-box {
+  width: min(520px, 100%);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+}
+
+.survey-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.survey-modal-header h3 {
+  margin: 0;
+  color: #0b1853;
+}
+
+.survey-modal-subtitle {
+  margin: 8px 0 14px;
+  color: #4f5b76;
+  font-weight: 500;
+}
+
+.survey-airport-list {
+  margin: 0;
+  padding-left: 20px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.survey-item {
+  margin-bottom: 8px;
+  color: #1f2a44;
+}
+
+.survey-empty-airports {
+  margin: 0;
+  color: #667085;
+}
+
+.survey-assigned-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e8f0ff;
+  color: #1f4ea1;
+  border: 1px solid #c8d8fa;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.qr-btn {
+  margin-left: 8px;
+}
+
+.qr-modal-box {
+  width: min(620px, 100%);
+}
+
+.qr-preview-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.qr-preview {
+  width: 240px;
+  height: 240px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.qr-url-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qr-url-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  color: #344054;
+}
+
+.qr-copy-btn {
+  white-space: nowrap;
+}
+
+.qr-copy-message {
+  margin: 8px 0 0;
+  color: #1f4ea1;
+  font-size: 13px;
+}

@@ -15,8 +15,30 @@ const surveyManagementService = {
     return response.data;
   },
 
+  findActive: async () => {
+    const response = await axios.get(`${API_BASE_URL}/surveys/active`, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  },
+
+  findCompleted: async () => {
+    const response = await axios.get(`${API_BASE_URL}/surveys/completed`, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  },
+
   findRunning: async () => {
     const response = await axios.get(`${API_BASE_URL}/surveys/running`, {
+      headers: getAuthHeader(),
+    });
+
+    return response.data;
+  },
+
+  generateQRCode: async (surveyId) => {
+    const response = await axios.get(`${API_BASE_URL}/surveys/${surveyId}/qrcode`, {
       headers: getAuthHeader(),
     });
 

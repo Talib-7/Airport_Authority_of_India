@@ -1,5 +1,22 @@
 import { create } from 'zustand';
 import authService from '../services/authService';
+import airportsService from '../../airports/services/airportsService';
+
+const AGENT_ROLE_ID = 2;
+
+const getCurrentPosition = () =>
+  new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Location services are not available in this browser.'));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => resolve(position),
+      () => reject(new Error('Location access is required for agent login.')),
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
+    );
+  });
 
 const useAuthStore = create((set) => ({
   // State
@@ -16,6 +33,32 @@ const useAuthStore = create((set) => ({
       const response = await authService.login(credentials);
       
       const { access_token, user } = response;
+
+      if (user?.roleId === AGENT_ROLE_ID) {
+        const position = await getCurrentPosition();
+        const accessResponse = await airportsService.validateAccess(
+          position.coords.latitude,
+          position.coords.longitude,
+        );
+
+        if (!accessResponse?.allowed) {
+          set({
+            loading: false,
+            error: 'Agent login is allowed only within an airport premise.',
+            isAuthenticated: false,
+          });
+          return { success: false, error: 'Agent login is allowed only within an airport premise.' };
+        }
+
+        if (user.airportId && accessResponse?.airport?.airportId !== user.airportId) {
+          set({
+            loading: false,
+            error: 'You are not within your assigned airport region.',
+            isAuthenticated: false,
+          });
+          return { success: false, error: 'You are not within your assigned airport region.' };
+        }
+      }
       
       // Save to localStorage
       localStorage.setItem('token', access_token);

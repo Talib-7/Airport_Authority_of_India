@@ -17,6 +17,7 @@ import GeneralQuestions from "./modules/generalQuestions/GeneralQuestions";
 import SurveyManagement from "./modules/surveyManagement/SurveyManagement";
 // import CreateFeedback from "./modules/createFeedback/CreateFeedback";
 import FeedbackForm from "./modules/feedbackForm/FeedbackForm";
+import FeedbackReceived from "./modules/feedbackReceived/FeedbackReceived";
 import SurveyHistory from "./modules/surveyHistory/SurveyHistory";
 import airportsService from "./modules/airports/services/airportsService";
 
@@ -172,7 +173,9 @@ function App() {
   useEffect(() => {
     // Public routes that don't need authentication
     const publicRoutes = ["/", "/login", "/register", "/forgot"];
-    const isPublicRoute = publicRoutes.includes(location.pathname);
+    const isPublicFeedbackRoute =
+      location.pathname.startsWith("/feedback-form/") || location.pathname === "/feedback-form";
+    const isPublicRoute = publicRoutes.includes(location.pathname) || isPublicFeedbackRoute;
     
     if (!token && !isPublicRoute) {
       navigate("/");
@@ -198,6 +201,7 @@ function App() {
         {/* <Route path="/create-feedback" element={<CreateFeedback />} /> */}
         <Route path="/feedback-form/:surveyId" element={<FeedbackForm />} />
         <Route path="/feedback-form" element={<FeedbackForm />} />
+        <Route path="/feedback-received" element={renderProtectedRoute(<FeedbackReceived />)} />
         <Route path="/survey-history" element={renderProtectedRoute(<SurveyHistory />)} />
         <Route path="*" element={<Navigate to={token ? "/dashboard" : "/login"} replace />} />
       </Routes>

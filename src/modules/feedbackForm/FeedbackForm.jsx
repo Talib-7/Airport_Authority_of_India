@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Layout from "../layout/Layout";
 import feedbackFormService from "./feedbackFormService";
+import surveyManagementService from "../surveyManagement/services/surveyManagementService";
 import "./feedbackForm.css";
 
 const createInitialTravelDetails = () => ({
@@ -11,8 +11,23 @@ const createInitialTravelDetails = () => ({
   destination: "",
 });
 
+const getQuestionKey = (question, fallbackIndex) =>
+  String(question?.id ?? question?.questionId ?? fallbackIndex);
+
+const getQuestionText = (question) => question?.question || question?.questionText || "Question";
+
+const getQuestionOptions = (question) =>
+  Array.isArray(question?.options) ? question.options : [];
+
+const getOptionValue = (option, fallbackIndex) =>
+  String(option?.optionValue ?? option?.optionLabel ?? option?.value ?? option?.label ?? fallbackIndex);
+
+const getOptionLabel = (option) => option?.optionLabel || option?.optionValue || option?.label || option?.value || "Option";
+
 const FeedbackForm = () => {
   const { surveyId } = useParams();
+  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const canGenerateQr = currentUser?.roleId === 1 || currentUser?.roleId === 2;
 
   const [survey, setSurvey] = useState(null);
   const [airportInfo, setAirportInfo] = useState({
@@ -20,16 +35,17 @@ const FeedbackForm = () => {
     code: "",
   });
   const [travelDetails, setTravelDetails] = useState(createInitialTravelDetails());
-  const [reason, setReason] = useState("");
-  const [aircraftClass, setAircraftClass] = useState("");
-  const [returnTrips, setReturnTrips] = useState("");
   const [answers, setAnswers] = useState({});
   const [generalAnswers, setGeneralAnswers] = useState({});
+  const [additionalComment, setAdditionalComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [userLocation, setUserLocation] = useState(null);
+  const [qrModalData, setQrModalData] = useState(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [copyMessage, setCopyMessage] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -106,9 +122,11 @@ const FeedbackForm = () => {
   };
 
   const handleGeneralAnswer = (question, value) => {
+    const questionKey = getQuestionKey(question, "unknown");
+
     setGeneralAnswers((currentAnswers) => ({
       ...currentAnswers,
-      [question.id]: value,
+      [questionKey]: value,
     }));
   };
 
@@ -126,20 +144,16 @@ const FeedbackForm = () => {
         latitude: userLocation.latitude,
         longitude: userLocation.longitude,
         travelDetails,
-        reason,
-        aircraftClass,
-        returnTrips,
         answers,
         generalAnswers,
+        additionalComment,
       });
 
       setSuccessMessage("Feedback submitted successfully.");
       setTravelDetails(createInitialTravelDetails());
-      setReason("");
-      setAircraftClass("");
-      setReturnTrips("");
       setAnswers({});
       setGeneralAnswers({});
+      setAdditionalComment("");
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
@@ -150,40 +164,77 @@ const FeedbackForm = () => {
     }
   };
 
+  const handleGenerateQr = async () => {
+    if (!surveyId || !canGenerateQr) {
+      return;
+    }
+
+    try {
+      setQrLoading(true);
+      setCopyMessage("");
+      const qrData = await surveyManagementService.generateQRCode(Number(surveyId));
+      setQrModalData(qrData);
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Unable to generate QR code.");
+    } finally {
+      setQrLoading(false);
+    }
+  };
+
+  const copyQrUrl = async () => {
+    if (!qrModalData?.url) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(qrModalData.url);
+      setCopyMessage("Link copied");
+    } catch (_error) {
+      setCopyMessage("Copy failed");
+    }
+  };
+
   if (loading) {
     return (
-      <Layout>
+      <div className="survey-container">
         <h2 style={{ textAlign: "center", marginTop: "50px" }}>
           Loading running survey...
         </h2>
-      </Layout>
+      </div>
     );
   }
 
   if (error && !survey) {
     return (
-      <Layout>
+      <div className="survey-container">
         <h2 style={{ textAlign: "center", marginTop: "50px", color: "#b42318" }}>
           {error}
         </h2>
-      </Layout>
+      </div>
     );
   }
 
   if (!survey) {
     return (
-      <Layout>
+      <div className="survey-container">
         <h2 style={{ textAlign: "center", marginTop: "50px" }}>
           No Live Survey Available
         </h2>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
+    <>
       <div className="survey-container">
-        <h2 className="survey-title">AAI CUSTOMER SATISFACTION SURVEY</h2>
+        <div className="survey-title-row">
+          <h2 className="survey-title">AAI CUSTOMER SATISFACTION SURVEY</h2>
+          {canGenerateQr ? (
+            <button className="submit-btn qr-generate-btn" onClick={handleGenerateQr} disabled={qrLoading}>
+              {qrLoading ? "Generating..." : "Generate QR"}
+            </button>
+          ) : null}
+        </div>
 
         {error ? (
           <div style={{ marginBottom: "12px", color: "#b42318", fontWeight: 600 }}>
@@ -247,53 +298,92 @@ const FeedbackForm = () => {
           />
         </div>
 
-        <div className="radio-section">
-          <p>Main Reason for Trip</p>
+        {(survey.generalQuestions || []).map((question, index) => {
+          const questionKey = getQuestionKey(question, index);
+          const questionType = String(question?.questionType || "TEXT").toUpperCase();
+          const questionValue = generalAnswers[questionKey] || "";
+          const options = getQuestionOptions(question);
 
-          {["Business", "Leisure", "Other"].map((value, index) => (
-            <label key={index}>
+          if (questionType === "RADIO") {
+            return (
+              <div key={questionKey} className="radio-section">
+                <p>{getQuestionText(question)}</p>
+
+                {options.map((option, optionIndex) => {
+                  const optionValue = getOptionValue(option, optionIndex);
+
+                  return (
+                    <label key={`${questionKey}-${optionValue}`}>
+                      <input
+                        type="radio"
+                        name={`gq-${questionKey}`}
+                        checked={String(questionValue) === optionValue}
+                        onChange={() => handleGeneralAnswer(question, optionValue)}
+                      />
+                      {getOptionLabel(option)}
+                    </label>
+                  );
+                })}
+              </div>
+            );
+          }
+
+          if (questionType === "SELECT") {
+            return (
+              <div key={questionKey} className="general-q">
+                <label>{getQuestionText(question)}</label>
+                <select
+                  value={questionValue}
+                  onChange={(event) => handleGeneralAnswer(question, event.target.value)}
+                >
+                  <option value="">Select an option</option>
+                  {options.map((option, optionIndex) => {
+                    const optionValue = getOptionValue(option, optionIndex);
+
+                    return (
+                      <option key={`${questionKey}-${optionValue}`} value={optionValue}>
+                        {getOptionLabel(option)}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            );
+          }
+
+          if (questionType === "RATING") {
+            return (
+              <div key={questionKey} className="radio-section">
+                <p>{getQuestionText(question)}</p>
+
+                {[5, 4, 3, 2, 1].map((rating) => (
+                  <label key={`${questionKey}-${rating}`}>
+                    <input
+                      type="radio"
+                      name={`gq-${questionKey}`}
+                      checked={String(questionValue) === String(rating)}
+                      onChange={() => handleGeneralAnswer(question, String(rating))}
+                    />
+                    {rating}
+                  </label>
+                ))}
+              </div>
+            );
+          }
+
+          return (
+            <div key={questionKey} className="general-q">
+              <label>{getQuestionText(question)}</label>
+
               <input
-                type="radio"
-                name="reason"
-                checked={reason === value}
-                onChange={() => setReason(value)}
+                type="text"
+                value={questionValue}
+                onChange={(event) => handleGeneralAnswer(question, event.target.value)}
+                placeholder="Type your answer"
               />
-              {value}
-            </label>
-          ))}
-        </div>
-
-        <div className="radio-section">
-          <p>Aircraft Class</p>
-
-          {["First Class", "Business", "Economy"].map((value, index) => (
-            <label key={index}>
-              <input
-                type="radio"
-                name="class"
-                checked={aircraftClass === value}
-                onChange={() => setAircraftClass(value)}
-              />
-              {value}
-            </label>
-          ))}
-        </div>
-
-        <div className="radio-section">
-          <p>Return Trips in Last 12 Months</p>
-
-          {["1-2", "3-5", "6-10", "11-20", "21+"].map((value, index) => (
-            <label key={index}>
-              <input
-                type="radio"
-                name="trips"
-                checked={returnTrips === value}
-                onChange={() => setReturnTrips(value)}
-              />
-              {value}
-            </label>
-          ))}
-        </div>
+            </div>
+          );
+        })}
 
         <h3 className="section-title">Airport Customer Satisfaction Questionnaire</h3>
 
@@ -332,18 +422,14 @@ const FeedbackForm = () => {
           </tbody>
         </table>
 
-        <h3 className="section-title">Additional Comments</h3>
-
-        {(survey.generalQuestions || []).map((question, index) => (
-          <div key={question.id || index} className="general-q">
-            <label>{question.question || question.questionText}</label>
-
-            <textarea
-              value={generalAnswers[question.id] || ""}
-              onChange={(event) => handleGeneralAnswer(question, event.target.value)}
-            />
-          </div>
-        ))}
+        <div className="general-q">
+          <label>Additional Comments</label>
+          <textarea
+            value={additionalComment}
+            onChange={(event) => setAdditionalComment(event.target.value)}
+            placeholder="Share any additional comments"
+          />
+        </div>
 
         <div className="submit-wrap">
           <button
@@ -356,7 +442,33 @@ const FeedbackForm = () => {
           </button>
         </div>
       </div>
-    </Layout>
+
+      {qrModalData ? (
+        <div className="survey-modal" onClick={() => setQrModalData(null)}>
+          <div className="survey-modal-box" onClick={(event) => event.stopPropagation()}>
+            <div className="survey-modal-header">
+              <h3>Survey QR Code</h3>
+              <button className="close-btn" onClick={() => setQrModalData(null)}>
+                Close
+              </button>
+            </div>
+
+            <p className="survey-modal-subtitle">{qrModalData.surveyName}</p>
+
+            <div className="qr-preview-wrap">
+              <img src={qrModalData.qrCode} alt="Survey QR" className="qr-preview" />
+            </div>
+
+            <div className="qr-url-wrap">
+              <input value={qrModalData.url} readOnly className="qr-url-input" />
+              <button className="submit-btn qr-copy-btn" onClick={copyQrUrl}>Copy Link</button>
+            </div>
+
+            {copyMessage ? <p className="qr-copy-message">{copyMessage}</p> : null}
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 };
 

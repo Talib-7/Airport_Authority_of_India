@@ -7,6 +7,12 @@ const ApprovedAgents = () => {
   const currentUser = JSON.parse(localStorage.getItem("user") || "null");
 
   const [userList, setUserList] = useState([]);
+  const [rejectModal, setRejectModal] = useState({
+    isOpen: false,
+    userId: null,
+    userName: "",
+    reason: "",
+  });
 
   if (!currentUser || currentUser.roleId !== 1) {
     return (
@@ -31,18 +37,36 @@ const ApprovedAgents = () => {
     loadApproved();
   }, []);
 
-  const deleteUser = async (userId) => {
+  const openRejectModal = (user) => {
+    setRejectModal({
+      isOpen: true,
+      userId: user.userId,
+      userName: user.fullName,
+      reason: "",
+    });
+  };
 
-    const reason = prompt("Enter reason for deleting this agent:");
-    if (!reason) return;
+  const closeRejectModal = () => {
+    setRejectModal({
+      isOpen: false,
+      userId: null,
+      userName: "",
+      reason: "",
+    });
+  };
 
-    const confirmDelete = window.confirm("Are you sure you want to delete this agent?");
-    if (!confirmDelete) return;
+  const deleteUser = async () => {
+    const reason = rejectModal.reason.trim();
+    if (!reason) {
+      alert("Reason is required");
+      return;
+    }
 
     try {
-      await agentService.rejectAgent(userId, reason);
-      const updated = userList.filter((user) => user.userId !== userId);
+      await agentService.rejectAgent(rejectModal.userId, reason);
+      const updated = userList.filter((user) => user.userId !== rejectModal.userId);
       setUserList(updated);
+      closeRejectModal();
     } catch (error) {
       const message = error.response?.data?.message || "Delete failed";
       alert(Array.isArray(message) ? message.join(", ") : message);
@@ -62,6 +86,7 @@ const ApprovedAgents = () => {
             <th>Mobile</th>
             <th>Agency Name</th>
             <th>Agency Code</th>
+            <th>Airport</th>
             <th>Auto Password</th>
             <th>Actions</th>
           </tr>
@@ -77,12 +102,13 @@ const ApprovedAgents = () => {
                 <td>{item.mobile}</td>
                 <td>{item.agencyName}</td>
                 <td>{item.agencyCode}</td>
+                <td>{item.airportName || "-"}</td>
                 <td>{item.generatedPassword || "-"}</td>
 
                 <td>
                   <button
                     className="delete-btn"
-                    onClick={() => deleteUser(item.userId)}
+                    onClick={() => openRejectModal(item)}
                   >
                     Delete
                   </button>
@@ -91,13 +117,38 @@ const ApprovedAgents = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="8" className="no-record">
+              <td colSpan="9" className="no-record">
                 No Record Found
               </td>
             </tr>
           )}
         </tbody>
       </table>
+
+      {rejectModal.isOpen && (
+        <div className="agent-action-modal-overlay" onClick={closeRejectModal}>
+          <div className="agent-action-modal" onClick={(event) => event.stopPropagation()}>
+            <h3>Remove Approved Agent</h3>
+            <p>
+              This will move <strong>{rejectModal.userName}</strong> to rejected history. Enter reason.
+            </p>
+
+            <textarea
+              className="agent-action-reason"
+              value={rejectModal.reason}
+              onChange={(event) =>
+                setRejectModal((current) => ({ ...current, reason: event.target.value }))
+              }
+              placeholder="Enter reason"
+            />
+
+            <div className="agent-action-modal-footer">
+              <button className="delete-btn" onClick={deleteUser}>Confirm Remove</button>
+              <button className="modal-cancel-btn" onClick={closeRejectModal}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };

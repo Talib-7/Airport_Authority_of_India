@@ -8,6 +8,12 @@ const RegisteredAgents = () => {
 
   const [users, setUsers] = useState([]);
   const [successMsg, setSuccessMsg] = useState(""); // 🔥 Success message state
+  const [rejectModal, setRejectModal] = useState({
+    isOpen: false,
+    userId: null,
+    userName: "",
+    reason: "",
+  });
 
   if (!currentUser || currentUser.roleId !== 1) {
     return (
@@ -47,14 +53,36 @@ const RegisteredAgents = () => {
     }
   };
 
-  const handleReject = async (userId) => {
-    const reason = prompt("Enter rejection reason:");
-    if (!reason) return;
+  const openRejectModal = (user) => {
+    setRejectModal({
+      isOpen: true,
+      userId: user.userId,
+      userName: user.fullName,
+      reason: "",
+    });
+  };
+
+  const closeRejectModal = () => {
+    setRejectModal({
+      isOpen: false,
+      userId: null,
+      userName: "",
+      reason: "",
+    });
+  };
+
+  const handleReject = async () => {
+    const reason = rejectModal.reason.trim();
+    if (!reason) {
+      alert("Rejection reason is required");
+      return;
+    }
 
     try {
-      await agentService.rejectAgent(userId, reason);
-      const updatedUsers = users.filter((user) => user.userId !== userId);
+      await agentService.rejectAgent(rejectModal.userId, reason);
+      const updatedUsers = users.filter((user) => user.userId !== rejectModal.userId);
       setUsers(updatedUsers);
+      closeRejectModal();
     } catch (error) {
       const message = error.response?.data?.message || "Rejection failed";
       alert(Array.isArray(message) ? message.join(", ") : message);
@@ -92,6 +120,7 @@ const RegisteredAgents = () => {
             <th>Mobile</th>
             <th>Agency Name</th>
             <th>Agency Code</th>
+            <th>Airport</th>
             <th>Upload ID</th>
             <th>Action</th>
           </tr>
@@ -107,6 +136,7 @@ const RegisteredAgents = () => {
         <td>{user.mobile}</td>
         <td>{user.agencyName}</td>
         <td>{user.agencyCode}</td>
+        <td>{user.airportName || "-"}</td>
 
         <td>
           <button
@@ -127,7 +157,7 @@ const RegisteredAgents = () => {
 
           <button
             className="reject-btn"
-            onClick={() => handleReject(user.userId)}
+            onClick={() => openRejectModal(user)}
           >
             Reject
           </button>
@@ -136,13 +166,38 @@ const RegisteredAgents = () => {
     ))
   ) : (
     <tr>
-      <td colSpan="8" className="no-record">
+      <td colSpan="9" className="no-record">
         No Record Found
       </td>
     </tr>
   )}
 </tbody>
       </table>
+
+      {rejectModal.isOpen && (
+        <div className="agent-action-modal-overlay" onClick={closeRejectModal}>
+          <div className="agent-action-modal" onClick={(event) => event.stopPropagation()}>
+            <h3>Reject Agent</h3>
+            <p>
+              Provide rejection reason for <strong>{rejectModal.userName}</strong>.
+            </p>
+
+            <textarea
+              className="agent-action-reason"
+              value={rejectModal.reason}
+              onChange={(event) =>
+                setRejectModal((current) => ({ ...current, reason: event.target.value }))
+              }
+              placeholder="Enter rejection reason"
+            />
+
+            <div className="agent-action-modal-footer">
+              <button className="reject-btn" onClick={handleReject}>Confirm Reject</button>
+              <button className="modal-cancel-btn" onClick={closeRejectModal}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
