@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import Layout from "../../layout/Layout";
 import StatCard from "../components/StatCard";
+import dashboardService from "../services/dashboardService";
 import "../styles/dashboard.css";
 
 const AGENT_ROLE_ID = 2;
@@ -17,51 +19,55 @@ const Dashboard = () => {
   const isAgent = currentUser?.roleId === AGENT_ROLE_ID;
   const assignedAirportId = currentUser?.airportId;
 
-  const surveyAggregates = [
-    { surveyId: "SRV-101", airportId: 1, totalFeedback: 345, todaysFeedback: 56, todaysBad: 4 },
-    { surveyId: "SRV-102", airportId: 2, totalFeedback: 290, todaysFeedback: 48, todaysBad: 3 },
-    { surveyId: "SRV-103", airportId: 1, totalFeedback: 270, todaysFeedback: 42, todaysBad: 1 },
-    { surveyId: "SRV-104", airportId: 5, totalFeedback: 382, todaysFeedback: 67, todaysBad: 5 },
-  ];
-
-  const visibleAggregates = surveyAggregates.filter((survey) => {
-    if (!isAgent) {
-      return true;
-    }
-
-    if (!assignedAirportId) {
-      return false;
-    }
-
-    return survey.airportId === assignedAirportId;
+  const [stats, setStats] = useState({
+    totalFeedback: 0,
+    todaysFeedback: 0,
+    todaysNegative: 0,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const totalFeedback = visibleAggregates.reduce((sum, survey) => sum + survey.totalFeedback, 0);
-  const todaysFeedback = visibleAggregates.reduce((sum, survey) => sum + survey.todaysFeedback, 0);
-  const todaysBad = visibleAggregates.reduce((sum, survey) => sum + survey.todaysBad, 0);
-  const todaysAverage = todaysFeedback > 0 ? ((todaysFeedback - todaysBad) / todaysFeedback) * 100 : 0;
+  useEffect(() => {
+    const loadDashboardStats = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  const hasVisibleData = visibleAggregates.length > 0 && totalFeedback > 0;
-  const displayStats = hasVisibleData
-    ? {
-        totalFeedback,
-        todaysFeedback,
-        todaysBad,
-        todaysAverage,
+        const params = {};
+        if (isAgent) {
+          // For agents, pass their userId to get accumulated data from all assigned airports
+          params.agentId = currentUser.userId;
+        }
+
+        const data = await dashboardService.getDashboardStats(
+          params.airportId || null,
+          params.surveyId || null,
+          params.agentId || null,
+        );
+
+        setStats(data);
+      } catch (err) {
+        console.error("Error loading dashboard stats:", err);
+        setError("Failed to load dashboard stats");
+        setStats({
+          totalFeedback: 0,
+          todaysFeedback: 0,
+          todaysNegative: 0,
+        });
+      } finally {
+        setLoading(false);
       }
-    : {
-        totalFeedback: 186,
-        todaysFeedback: 27,
-        todaysBad: 2,
-        todaysAverage: 92.6,
-      };
+    };
+
+    loadDashboardStats();
+  }, [isAgent, currentUser?.userId]);
 
   return (
     <Layout>
 
       <h1>Dashboard</h1>
 
-      {/* Filters */}
+      {/* Filters for Admins */}
       {!isAgent && (
         <div className="filters">
           <span>Filters :</span>
@@ -80,13 +86,28 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* Error Message */}
+      {error && (
+        <div style={{ marginBottom: "20px", color: "#b42318", fontWeight: 600 }}>
+          {error}
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div style={{ marginBottom: "20px", color: "#666" }}>
+          Loading dashboard...
+        </div>
+      )}
+
       {/* Stats Cards */}
-      <div className="stats-row">
-        <StatCard title="Total Feedback" value={displayStats.totalFeedback} color="blue" />
-        <StatCard title="Today's Feedback" value={displayStats.todaysFeedback} color="green" />
-        <StatCard title="Today's Average" value={`${displayStats.todaysAverage.toFixed(1)}%`} color="yellow" />
-        <StatCard title="Today's Bad" value={displayStats.todaysBad} color="red" />
-      </div>
+      {!loading && (
+        <div className="stats-row">
+          <StatCard title="Total Feedback" value={stats.totalFeedback} color="blue" />
+          <StatCard title="Today's Feedback" value={stats.todaysFeedback} color="green" />
+          <StatCard title="Today's Negative" value={stats.todaysNegative} color="red" />
+        </div>
+      )}
 
     </Layout>
   );

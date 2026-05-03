@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import Layout from "../layout/Layout";
 import "./approvedAgents.css";
 import agentService from "../auth/services/agentService";
@@ -7,23 +7,19 @@ const ApprovedAgents = () => {
   const currentUser = JSON.parse(localStorage.getItem("user") || "null");
 
   const [userList, setUserList] = useState([]);
-  const [rejectModal, setRejectModal] = useState({
+  const [actionModal, setActionModal] = useState({
     isOpen: false,
     userId: null,
     userName: "",
+    actionType: "block",
     reason: "",
   });
 
-  if (!currentUser || currentUser.roleId !== 1) {
-    return (
-      <Layout>
-        <h2>Approved Agents</h2>
-        <p>Access denied. Only admin can view this page.</p>
-      </Layout>
-    );
-  }
-
   useEffect(() => {
+    if (!currentUser || currentUser.roleId !== 1) {
+      return;
+    }
+
     const loadApproved = async () => {
       try {
         const approved = await agentService.getApprovedAgents();
@@ -37,41 +33,58 @@ const ApprovedAgents = () => {
     loadApproved();
   }, []);
 
-  const openRejectModal = (user) => {
-    setRejectModal({
+  if (!currentUser || currentUser.roleId !== 1) {
+    return (
+      <Layout>
+        <h2>Approved Agents</h2>
+        <p>Access denied. Only admin can view this page.</p>
+      </Layout>
+    );
+  }
+
+  const openActionModal = (user) => {
+    setActionModal({
       isOpen: true,
       userId: user.userId,
       userName: user.fullName,
+      actionType: user.isBlocked ? "unblock" : "block",
       reason: "",
     });
   };
 
-  const closeRejectModal = () => {
-    setRejectModal({
+  const closeActionModal = () => {
+    setActionModal({
       isOpen: false,
       userId: null,
       userName: "",
+      actionType: "block",
       reason: "",
     });
   };
 
-  const deleteUser = async () => {
-    const reason = rejectModal.reason.trim();
-    if (!reason) {
-      alert("Reason is required");
-      return;
-    }
-
+  const submitAction = async () => {
     try {
-      await agentService.rejectAgent(rejectModal.userId, reason);
-      const updated = userList.filter((user) => user.userId !== rejectModal.userId);
-      setUserList(updated);
-      closeRejectModal();
+      const response =
+        actionModal.actionType === "block"
+          ? await agentService.blockAgent(
+              actionModal.userId,
+              actionModal.reason.trim() || undefined,
+            )
+          : await agentService.unblockAgent(actionModal.userId);
+
+      setUserList((current) =>
+        current.map((user) =>
+          user.userId === actionModal.userId ? response.agent : user,
+        ),
+      );
+      closeActionModal();
     } catch (error) {
-      const message = error.response?.data?.message || "Delete failed";
+      const message = error.response?.data?.message || "Agent action failed";
       alert(Array.isArray(message) ? message.join(", ") : message);
     }
   };
+
+  const statusLabel = (user) => (user.isBlocked ? "Blocked" : "Approved");
 
   return (
     <Layout>
@@ -88,6 +101,8 @@ const ApprovedAgents = () => {
             <th>Agency Code</th>
             <th>Airport</th>
             <th>Auto Password</th>
+            <th>Status</th>
+            <th>Block Reason</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -104,11 +119,31 @@ const ApprovedAgents = () => {
                 <td>{item.agencyCode}</td>
                 <td>{item.airportName || "-"}</td>
                 <td>{item.generatedPassword || "-"}</td>
-
+                <td>
+                  <span className={item.isBlocked ? "status-pill status-blocked" : "status-pill status-approved"}>
+                    {statusLabel(item)}
+                  </span>
+                </td>
+                <td>{item.blockReason || "-"}</td>
                 <td>
                   <button
+                    className={item.isBlocked ? "unblock-btn" : "block-btn"}
+                    onClick={() => openActionModal(item)}
+                  >
+                    {item.isBlocked ? "Unblock" : "Block"}
+                  </button>
+                  <button
                     className="delete-btn"
-                    onClick={() => openRejectModal(item)}
+                    onClick={async () => {
+                      if (!window.confirm(`Delete ${item.fullName}? This cannot be undone.`)) return;
+                      try {
+                        await agentService.deleteAgent(item.userId);
+                        setUserList((current) => current.filter((u) => u.userId !== item.userId));
+                      } catch (error) {
+                        const message = error.response?.data?.message || 'Delete failed';
+                        alert(Array.isArray(message) ? message.join(', ') : message);
+                      }
+                    }}
                   >
                     Delete
                   </button>
@@ -117,7 +152,7 @@ const ApprovedAgents = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="9" className="no-record">
+              <td colSpan="11" className="no-record">
                 No Record Found
               </td>
             </tr>
@@ -125,26 +160,41 @@ const ApprovedAgents = () => {
         </tbody>
       </table>
 
-      {rejectModal.isOpen && (
-        <div className="agent-action-modal-overlay" onClick={closeRejectModal}>
+      {actionModal.isOpen && (
+        <div className="agent-action-modal-overlay" onClick={closeActionModal}>
           <div className="agent-action-modal" onClick={(event) => event.stopPropagation()}>
-            <h3>Remove Approved Agent</h3>
+            <h3>{actionModal.actionType === "block" ? "Block Approved Agent" : "Unblock Agent"}</h3>
             <p>
-              This will move <strong>{rejectModal.userName}</strong> to rejected history. Enter reason.
+              {actionModal.actionType === "block" ? (
+                <>
+                  Blocking <strong>{actionModal.userName}</strong> will prevent account access. Add an optional reason below.
+                </>
+              ) : (
+                <>
+                  This will restore access for <strong>{actionModal.userName}</strong>.
+                </>
+              )}
             </p>
 
-            <textarea
-              className="agent-action-reason"
-              value={rejectModal.reason}
-              onChange={(event) =>
-                setRejectModal((current) => ({ ...current, reason: event.target.value }))
-              }
-              placeholder="Enter reason"
-            />
+            {actionModal.actionType === "block" && (
+              <textarea
+                className="agent-action-reason"
+                value={actionModal.reason}
+                onChange={(event) =>
+                  setActionModal((current) => ({ ...current, reason: event.target.value }))
+                }
+                placeholder="Optional blocking reason"
+              />
+            )}
 
             <div className="agent-action-modal-footer">
-              <button className="delete-btn" onClick={deleteUser}>Confirm Remove</button>
-              <button className="modal-cancel-btn" onClick={closeRejectModal}>Cancel</button>
+              <button
+                className={actionModal.actionType === "block" ? "block-btn" : "unblock-btn"}
+                onClick={submitAction}
+              >
+                {actionModal.actionType === "block" ? "Confirm Block" : "Confirm Unblock"}
+              </button>
+              <button className="modal-cancel-btn" onClick={closeActionModal}>Cancel</button>
             </div>
           </div>
         </div>

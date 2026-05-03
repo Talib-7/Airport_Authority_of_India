@@ -49,6 +49,24 @@ const agentService = {
     return response.data;
   },
 
+  blockAgent: async (userId, reason) => {
+    const response = await axios.patch(
+      `${API_BASE_URL}/agents/${userId}/block`,
+      { reason },
+      { headers: getAuthHeaders() },
+    );
+    return response.data;
+  },
+
+  unblockAgent: async (userId) => {
+    const response = await axios.patch(
+      `${API_BASE_URL}/agents/${userId}/unblock`,
+      {},
+      { headers: getAuthHeaders() },
+    );
+    return response.data;
+  },
+
   getApprovedAgents: async () => {
     const response = await axios.get(`${API_BASE_URL}/agents/approved`, {
       headers: getAuthHeaders(),
@@ -58,6 +76,13 @@ const agentService = {
 
   getAgentHistory: async () => {
     const response = await axios.get(`${API_BASE_URL}/agents/history`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  },
+
+  deleteAgent: async (userId) => {
+    const response = await axios.delete(`${API_BASE_URL}/agents/${userId}`, {
       headers: getAuthHeaders(),
     });
     return response.data;

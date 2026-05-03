@@ -25,6 +25,13 @@ const getOptionValue = (option, fallbackIndex) =>
 const getOptionLabel = (option) => option?.optionLabel || option?.optionValue || option?.label || option?.value || "Option";
 
 const FeedbackForm = () => {
+  const ratingLabels = {
+    5: 'Excellent',
+    4: 'Very Good',
+    3: 'Good',
+    2: 'Fair',
+    1: 'Poor',
+  };
   const { surveyId } = useParams();
   const currentUser = JSON.parse(localStorage.getItem("user") || "null");
   const canGenerateQr = currentUser?.roleId === 1 || currentUser?.roleId === 2;
@@ -364,7 +371,7 @@ const FeedbackForm = () => {
                       checked={String(questionValue) === String(rating)}
                       onChange={() => handleGeneralAnswer(question, String(rating))}
                     />
-                    {rating}
+                    {rating} - {ratingLabels[rating]}
                   </label>
                 ))}
               </div>
@@ -392,11 +399,11 @@ const FeedbackForm = () => {
             <tr>
               <th>Sl No</th>
               <th>Questions / Parameters</th>
-              <th>5</th>
-              <th>4</th>
-              <th>3</th>
-              <th>2</th>
-              <th>1</th>
+              <th>5<br/><small>Excellent</small></th>
+              <th>4<br/><small>Very Good</small></th>
+              <th>3<br/><small>Good</small></th>
+              <th>2<br/><small>Fair</small></th>
+              <th>1<br/><small>Poor</small></th>
             </tr>
           </thead>
 

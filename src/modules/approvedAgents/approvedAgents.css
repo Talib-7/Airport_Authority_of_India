@@ -80,9 +80,9 @@ h2 {
 .approved-table th:nth-child(7),
 .approved-table td:nth-child(7) { width: 12%; }
 
-/* ===== Delete Button ===== */
-.delete-btn {
-  background: #dc3545;
+/* ===== Action Buttons ===== */
+.block-btn,
+.unblock-btn {
   border: none;
   padding: 7px 14px;
   border-radius: 6px;
@@ -92,9 +92,43 @@ h2 {
   transition: 0.2s ease;
 }
 
-.delete-btn:hover {
+.block-btn {
+  background: #dc3545;
+}
+
+.block-btn:hover {
   background: #c82333;
   transform: translateY(-1px);
+}
+
+.unblock-btn {
+  background: #1d7a5f;
+}
+
+.unblock-btn:hover {
+  background: #16634c;
+  transform: translateY(-1px);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-approved {
+  background: #e6f6ee;
+  color: #117a4b;
+}
+
+.status-blocked {
+  background: #fdecec;
+  color: #b42318;
 }
 
 .no-record {
@@ -161,4 +195,21 @@ h2 {
 
 .modal-cancel-btn:hover {
   background: #5a636a;
+}
+
+.delete-btn {
+  border: none;
+  padding: 7px 12px;
+  border-radius: 6px;
+  color: white;
+  background: #6f42c1;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.15s ease;
+}
+
+.delete-btn:hover {
+  background: #5a2fa6;
+  transform: translateY(-1px);
 }
