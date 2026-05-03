@@ -67,24 +67,6 @@ const Dashboard = () => {
 
       <h1>Dashboard</h1>
 
-      {/* Filters for Admins */}
-      {!isAgent && (
-        <div className="filters">
-          <span>Filters :</span>
-
-          <select>
-            <option>Select Airport</option>
-          </select>
-
-          <select>
-            <option>Select Agent</option>
-          </select>
-
-          <select>
-            <option>Select Region</option>
-          </select>
-        </div>
-      )}
 
       {/* Error Message */}
       {error && (
